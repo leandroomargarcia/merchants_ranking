@@ -231,9 +231,47 @@ Con una fila por merchant, la pregunta es si el perfil de ese día se parece al 
 
 Nulos: en las tasas, el valor −1 (sin transacciones) se toma como nulo. La tasa a 1 día queda nula la mayoría de las veces: el merchant no operó ese día. La logística imputa esos nulos con la mediana.
 
-### Pendiente
+### Nulos y valores fuera de rango (resuelto)
 
-- Tratamiento de nulos y valores fuera de rango para modelos que no aceptan nulos (tasas con −1, conteos con decimales).
+- **Tasas con −1** (sin transacciones): se toman como nulas (`04_features.ipynb`).
+- **Tasas fuera de [0, 1]:** se recortan a ese rango en la logística (`05_logistica.ipynb`).
+- **Nulos en las variables del modelo:** `aprobacion_7d` y `aprobacion_historica` se imputan con la mediana dentro de cada fold, para no usar información del fold de test. La falta de actividad a 7 días queda como variable propia (`sin_actividad_7d`). El ticket y los intentos nulos valen 0 (no hubo actividad).
+- **Conteos con decimales:** se dejan como vienen; es un ruido chico frente a la escala de los conteos.
+
+### Retención por tipo de pago y por monto
+
+Fuente: `notebooks/07_reglas.ipynb` (últimas celdas). Salidas: `docs/reglas/retencion_cnp_monto.csv` y `docs/reglas/rechazo_cnp_monto.csv`.
+
+El score es por merchant y no ve el fraude de los merchants chicos que venden sin tarjeta presente (CNP). Estas reglas miran la transacción: el tipo de pago y el monto, que están disponibles al autorizar. En lo aprobado, el fraude es 17 veces más frecuente en CNP (0,55% de las transacciones contra 0,03% en tarjeta presente) y se concentra en los montos altos.
+
+**Rechazar por tipo de pago o monto no conviene.** El equilibrio queda entre 0,6% y 0,8%, por debajo del 1,5% que exige el criterio de la sección 5. El fraude de los montos altos pesa mucho en dólares, pero rechazar esas transacciones cuesta casi lo mismo en TPV bueno.
+
+| Regla de rechazo | Fraude evitado (% del $) | TPV bueno rechazado | Equilibrio |
+|---|---:|---:|---:|
+| Monto ≥ 5.000 | 75,0% | 29,7% | 0,62% |
+| Monto ≥ 20.000 | 32,3% | 12,0% | 0,66% |
+| Todo CNP | 27,6% | 8,5% | 0,80% |
+| CNP con monto ≥ 500 | 27,5% | 8,4% | 0,81% |
+
+**Retener sí.** No se pierde TPV, solo se demora. Se retiene, sobre lo que queda aprobado después del rechazo, toda transacción que cumpla alguna de dos condiciones: **CNP con monto de 500 o más**, o **monto de 20.000 o más** (cualquier tipo).
+
+| Retención | TPV retenido | Fraude retenido (% del $) | Demora promedio | Transacciones |
+|---|---:|---:|---:|---:|
+| Actual: revisión manual + automática | 18,3% | 33,3% | 1,28 días | 995.861 |
+| Nueva: CNP con monto ≥ 500 | 8,0% | 23,7% | 0,56 días | 40.297 |
+| Nueva: monto ≥ 20.000 | 11,8% | 34,0% | 0,82 días | 8.767 |
+| Nuevas: ambas | 16,4% | 48,3% | 1,15 días | 47.057 |
+| **Actual + nuevas** | **30,6%** | **68,6%** | **2,13 días** | 1.031.095 |
+
+Las nuevas suman **12,3 puntos de TPV demorado y 35,3 puntos de fraude retenido** (2,9 veces), y llevan el fraude evitado o retenido del 41,5% a cerca del 72% (12,3% evitado por el rechazo, más 68,6% de lo que queda). Lo que más aporta es el monto alto: son 8.767 transacciones en tres meses (unas 100 por día), un volumen manejable para revisión manual. La regla CNP son 40.297, y toma el fraude que el score no ve: el 91% de los merchants con CNP no está en el 5% más riesgoso.
+
+**Límites**
+- Los cortes (500 y 20.000) se eligieron mirando estas mismas transacciones, igual que el resto de las reglas.
+- Las transacciones no tienen fecha, así que no se puede probar estabilidad en el tiempo.
+- Entre mitades de merchants el monto alto se sostiene (36,8% y 31,9% del fraude retenido); el CNP varía más (27,3% y 21,0%). Sin el merchant con más fraude (`M46B66AE…`), la retención completa pasa de 68,6% a 65,8%.
+- **El fraude CNP está concentrado:** 138 merchants con fraude, y los 10 mayores suman el 58% del $ (el mayor, el 18%). Es la parte más frágil.
+- Retener cuesta en operación y en demora: la regla completa demora 2,13 días en promedio el TPV bueno, contra 1,28 de la actual. Depende del supuesto de 7 días de retención, que no está en los datos.
+- Cerca del 28% del $ de fraude sigue pasando sin ningún control (antes, 58,5%).
 
 ---
 
