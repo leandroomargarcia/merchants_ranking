@@ -1,0 +1,9 @@
+grupo,modelo,pr_auc,pr_auc_desvio,top1,top5,top5_desvio,prevalencia,positivos,k1,k5
+todos,Regla (sin entrenar),0.00825,0.0,4.0,8.0,0.0,0.00036,12,336,1676
+todos,Logística A,0.00601,0.00121,2.24516,8.3,0.45826,0.00036,12,336,1676
+todos,Logística B,0.02163,0.00271,5.7,10.6,0.66332,0.00036,12,336,1676
+todos,Logística C,0.0234,0.00807,5.4,9.9,0.3,0.00036,12,336,1676
+sin grupo D,Regla (sin entrenar),0.00825,0.0,4.0,8.0,0.0,0.00036,12,336,1676
+sin grupo D,Logística A,0.00601,0.00121,2.24516,8.3,0.45826,0.00036,12,336,1676
+sin grupo D,Logística B,0.02163,0.00271,5.7,10.6,0.66332,0.00036,12,336,1676
+sin grupo D,Logística C,0.0234,0.00807,5.4,9.9,0.3,0.00036,12,336,1676

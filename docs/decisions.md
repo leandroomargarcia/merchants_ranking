@@ -64,7 +64,7 @@ Otros hechos que pesan en la decisión:
 | | `MF000975FCCCF8010` | 11-sep | Antigüedad 0, una transacción de alrededor de 1 peso. No cuenta como caso |
 | | `M486B452BBACA6CA4` | 11-sep | Casi inactivo: dos transacciones online de ~3.000, aprobadas. Probablemente lo suspendió el propio merchant. No cuenta como caso |
 | | `M3182C56E1D13EC33` | 24-sep | No hizo nada raro. Lo suspendieron por otro motivo. No cuenta como caso |
-| | `M315DBFD11714A6D5` | 30-sep | Antes del bloqueo se ve sano (aprobación cerca de 100%, claims en 0). Los claims saltan al día siguiente, de 0 a 17 |
+| | `M315DBFD11714A6D5` | 30-sep | Antes del bloqueo: 1 a 3 intentos por día, todos aprobados, y 4 días sin actividad. No hay actividad sospechosa. Los claims (mensuales) saltan el 1-oct, de 0 a 17 |
 
 Lectura:
 - **A y B (10):** muestran algo antes de la suspensión. Es lo único que un modelo podría anticipar.
@@ -79,7 +79,8 @@ Cuidados:
 **Decidido**
 - **Positivos: 12 merchants con inicio observado**, todos menos `M002D3A13420843D9`, `ME9BD50FCE697D4A7`, `MF000975FCCCF8010`, `M315DBFD11714A6D5`, `M486B452BBACA6CA4`, `M3182C56E1D13EC33` y `MEA1EE5CA0A25553F`.
 - **`M002D3A13420843D9` queda fuera del todo**, también de la sensibilidad. Su historia empieza el 1-abr, primer día de datos, y lo suspenden el 7-abr. Esos días existen porque ahí arranca el dataset, no porque hayamos visto al merchant antes. No se puede separar una suspensión de un borde de la ventana.
-- **`ME9BD50FCE697D4A7`, `MF000975FCCCF8010`, `M315DBFD11714A6D5`, `M486B452BBACA6CA4`, `M3182C56E1D13EC33` y `MEA1EE5CA0A25553F` quedan fuera del análisis**, de entrenamiento y de test. `M3182` no hizo nada raro: lo suspendieron por otro motivo. `MEA1EE5` nunca operó.
+- **`ME9BD50FCE697D4A7`, `MF000975FCCCF8010`, `M315DBFD11714A6D5`, `M486B452BBACA6CA4`, `M3182C56E1D13EC33` y `MEA1EE5CA0A25553F` quedan fuera del análisis**, de entrenamiento y de test. `M3182` no hizo nada raro: lo suspendieron por otro motivo. `MEA1EE5` nunca operó. `M315DBFD11714A6D5` tampoco muestra actividad sospechosa antes de la suspensión: 1 a 3 intentos por día, todos aprobados, y 4 días sin actividad. El criterio común es ese: no hay nada en la actividad que un modelo pueda aprender, y la empresa dice que las suspensiones pueden ser por documentación o cumplimiento, sin dar el motivo.
+- **Límite del recall.** Se sacaron 6 de los 18 casos con inicio observado porque antes del inicio no muestran actividad sospechosa. El recall que se reporta es sobre las suspensiones que se ven en la actividad. La empresa evalúa contra todas las suspensiones de octubre a diciembre, incluidas las que no tienen señal, así que el recall real va a ser menor.
 - **Los 7 sin inicio observado quedan fuera.** No hay un día activo anterior desde el que rankearlos. `M214FEFB687B0BF24`, `ME05F52FFA78E2A54` y `ME180F1798534B082` ya están suspendidos el 1-abr. `M610AE7B7698D91D4`, `MBEAC57FE29695D34` y `MD6E9ABDB55CED9C5` aparecen el mismo día en que los suspenden. `MEBF6C90BC93B6B23` tiene 153 días de estado nulo antes de su suspensión.
 
 **Opciones**
@@ -254,6 +255,6 @@ La empresa respondió las dudas del challenge. Lo que confirmó:
 ### Lo que cambia (a revisar en las decisiones de arriba)
 
 - **El día de la suspensión no tiene fuga.** La fila del primer día suspendido resume actividad hasta el día anterior, cuando el merchant todavía operaba, y un suspendido no genera rechazos. Los rechazos de esa fila son previos a la suspensión. Eso deja sin fundamento la duda de "el día 0 no se usa" (decisión 1b) y el criterio de elegir "el día con más rechazos". Lo coherente es una sola regla: la foto de cada positivo es la fila de su primer día suspendido. La fila del día anterior resume actividad de dos días antes.
-- **Octubre a diciembre sí hay que puntuarlo.** No entra al entrenamiento (no tiene etiqueta), pero las transacciones son de ese período y hay que asignarle un score a cada merchant. Queda por decidir qué fila: por ejemplo la del 1-oct, que resume actividad hasta el 30-sep.
-- **Las columnas mensuales explican el "ruido".** El salto de `merchant_tenure_days` es la actualización mensual, no un error. El salto de claims de `M315DBFD11714A6D5` ocurre al cambiar de mes y puede reflejar actividad de septiembre, previa a la suspensión. El argumento "lo raro aparece después del bloqueo" no se sostiene.
+- **Octubre a diciembre se puntúa con la logística B, sin reentrenar con las transacciones.** Una fila por merchant que aparece en `txn_sample`: la del 1-oct, que resume la actividad hasta el 30-sep. Si ese día no tiene fila, la última con fecha ≤ 1-oct. El score se une por `merchant_id`. `is_fraud` y `approved` no entran al ajuste. Lo escribe `notebooks/05_logistica.ipynb` en `data/processed/score_octubre.parquet`.
+- **Las columnas mensuales explican el "ruido".** El salto de `merchant_tenure_days` es la actualización mensual, no un error. El salto de claims de `M315DBFD11714A6D5` ocurre al cambiar de mes y puede reflejar actividad de septiembre, previa a la suspensión. El argumento "lo raro aparece después del bloqueo" no se sostiene: el motivo para dejarlo fuera es otro, que antes de la suspensión no hay actividad sospechosa (ver la decisión 1a).
 - **Los motivos de suspensión están mezclados** (fraude, riesgo preventivo, cumplimiento, documentación) y el dataset no los separa. El grupo D puede ser cumplimiento o documentación, pero no se puede confirmar caso por caso.
