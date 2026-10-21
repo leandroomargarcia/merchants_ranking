@@ -258,3 +258,106 @@ La empresa respondió las dudas del challenge. Lo que confirmó:
 - **Octubre a diciembre se puntúa con la logística B, sin reentrenar con las transacciones.** Una fila por merchant que aparece en `txn_sample`: la del 1-oct, que resume la actividad hasta el 30-sep. Si ese día no tiene fila, la última con fecha ≤ 1-oct. El score se une por `merchant_id`. `is_fraud` y `approved` no entran al ajuste. Lo escribe `notebooks/05_logistica.ipynb` en `data/processed/score_octubre.parquet`.
 - **Las columnas mensuales explican el "ruido".** El salto de `merchant_tenure_days` es la actualización mensual, no un error. El salto de claims de `M315DBFD11714A6D5` ocurre al cambiar de mes y puede reflejar actividad de septiembre, previa a la suspensión. El argumento "lo raro aparece después del bloqueo" no se sostiene: el motivo para dejarlo fuera es otro, que antes de la suspensión no hay actividad sospechosa (ver la decisión 1a).
 - **Los motivos de suspensión están mezclados** (fraude, riesgo preventivo, cumplimiento, documentación) y el dataset no los separa. El grupo D puede ser cumplimiento o documentación, pero no se puede confirmar caso por caso.
+
+---
+
+## 4 · Score por merchant y join a las transacciones
+
+**Estado:** `decidida`
+
+Fuente: `notebooks/06_transacciones_con_score.ipynb`. El score sale de `05_logistica.ipynb` (logística B, fila del 1-oct; ver el anexo).
+
+- **Join por `merchant_id`**, muchos a uno. Las transacciones no tienen fecha, así que cada merchant tiene un único score para todas sus transacciones de octubre a diciembre.
+- **Cobertura 100%:** 7.079.949 transacciones y 40.265 merchants, sin ninguna transacción ni merchant sin score. Sale en `data/processed/transacciones_con_score.parquet` (no se versiona: `data/` está ignorado).
+- **`risk_pct`:** percentil del score entre los 40.265 merchants (1 = más riesgo). **Los umbrales de las reglas se definen por percentil, no por probabilidad:** la logística se entrena con pesos balanceados y su probabilidad no está calibrada.
+- **Empates en el extremo bajo:** 952 merchants (2,4%) comparten el score mínimo, así que un corte en los percentiles bajos no es preciso. El extremo alto sí se distingue.
+- `is_fraud` y `approved` no entraron al modelo: quedan para medir el impacto de negocio.
+
+**Chequeo descriptivo** (no es la evaluación de las reglas). Tabla en `docs/score/riesgo_por_tramo.csv` y gráfico en `docs/score/riesgo_por_tramo.png`:
+
+| Tramo de riesgo | Merchants | % transacciones | % TPV | Aprobación | Fraude |
+|---|---:|---:|---:|---:|---:|
+| 0–50% | 20.132 | 6,1% | 17,0% | 89,5% | 0,081% |
+| 50–90% | 16.106 | 55,5% | 49,2% | 94,3% | 0,025% |
+| 90–95% | 2.013 | 24,4% | 14,9% | 93,7% | 0,020% |
+| 95–99% | 1.611 | 11,7% | 12,8% | 92,2% | 0,093% |
+| 99–100% | 403 | 2,4% | 6,1% | 86,2% | 0,098% |
+
+- El 5% de merchants más riesgoso (2.014) concentra el 36% de los fraudes (931 de 2.600) con el 14% de las transacciones y el 19% del TPV. Su tasa de fraude es de 3,7 a 4,9 veces la de los tramos 50–95%.
+- **El tramo de menor riesgo también tiene tasa alta (0,081%),** con apenas el 6% de las transacciones: son merchants chicos o con poca actividad. El score se entrenó con suspensión, no con fraude, así que no ordena todo el fraude. Hay que tenerlo en cuenta al fijar las reglas.
+
+### Limitación del score: no ordena bien el fraude
+
+El score ordena a los merchants con algún fraude (AUC por merchant 0,76), pero casi no ordena las transacciones fraudulentas (AUC por transacción 0,57; el azar da 0,50). El gráfico de la tasa de fraude por tramo no es monótono:
+
+- **El tramo 0–50% tiene tasa alta (0,081%)** porque son merchants con muy poca actividad: mediana de 5 transacciones por merchant, contra 60 en el resto, y el 37% tiene entre 1 y 3. Hay 171 merchants con fraude ahí; los tres mayores son solo el 12%. Con tan pocas transacciones, un fraude mueve mucho la tasa.
+- **El tramo 95–99% está inflado por un merchant:** `M46B66AE0E309595B` tiene 256 de los 767 fraudes de ese tramo. Sin él, la tasa baja de 0,093% a 0,062%.
+- **Por qué:** el score se entrenó con suspensión, no con fraude, y son poblaciones casi distintas (de los 26 suspendidos, solo 1 tenía fraude alto).
+
+**Qué implica para las reglas:** la señal está en el extremo alto (el 5% más riesgoso concentra el 36% de los fraudes), no en el resto. Una regla que mire solo el score deja pasar el fraude de merchants chicos de bajo riesgo, y la tasa observada de un merchant con pocas transacciones no es confiable. Por eso las reglas de la sección 5 combinan el score con el volumen del merchant.
+
+---
+
+## 5 · Reglas de pre y post autorización
+
+**Estado:** `decidida`, con límites declarados abajo.
+
+Fuente: `notebooks/07_reglas.ipynb`. Salidas en `docs/reglas/`: `kpis_reglas.csv`, `tabla_de_cortes.csv`, `chequeos.csv`, `segmentos.csv`, `reglas.png` y `trade_off.png`.
+
+Las transacciones (octubre a diciembre) no se usaron para entrenar: son el conjunto independiente para medir el impacto. Las reglas combinan `risk_pct` con el **volumen** del merchant (intentos en los 30 días hasta el 30-sep: sin actividad, baja 1–9, media 10–99, alta 100 o más), porque el score ordena el fraude solo en parte (sección 4). En volumen alto casi no separa: con riesgo ≥ 95% la tasa de fraude es 0,05%–0,07%, contra 0,4%–1,1% en volumen bajo y medio.
+
+**Supuestos que no están en los datos:** margen de Clip sobre el TPV de 1% y retención de pagos de 7 días.
+
+### Las reglas
+
+| Etapa | Regla | Por qué |
+|---|---|---|
+| **Pre-autorización: rechazar** | `risk_pct` ≥ 0,90 y volumen **bajo**; o `risk_pct` ≥ 0,99 y volumen **medio** | Donde el score discrimina y el equilibrio supera con holgura el margen (1,56% y 2,34% contra 1%) |
+| | No se rechaza a volumen **alto** | El score no separa el fraude y rechazar costaría mucho TPV bueno (con corte 0,95: 12% del TPV bueno para evitar 21% del fraude) |
+| **Post-autorización: retener** | **Revisión manual:** volumen alto y `risk_pct` ≥ 0,95 | 244 merchants y mucho TPV: se retiene y se revisa, sin rechazar |
+| | **Retención automática de 7 días:** merchants sin actividad en 30 días | El score los pone en el riesgo más bajo (el coeficiente de `sin_actividad_7d` es negativo), pero su tasa de fraude es 2,4 veces el promedio |
+| | El resto se paga de inmediato | |
+
+**Criterio de los cortes:** una regla de rechazo debe tener un *equilibrio* (fraude evitado en $ / TPV bueno rechazado) de al menos 1,5%, con el margen supuesto de 1%. Los cortes se compararon en `tabla_de_cortes.csv`.
+
+### KPIs de negocio
+
+Sobre lo aprobado (6.615.456 transacciones, TPV $3.000 millones, fraude $7,4 millones = 0,247% del TPV):
+
+| | Merchants | Resultado |
+|---|---:|---|
+| **Pre: rechazar** | 1.477 | 19.193 transacciones rechazadas. **Fraude evitado: 165 transacciones, 12,3% del $.** TPV bueno rechazado: **1,78%**. Equilibrio 1,71%. Beneficio neto de $0,38 millones con el margen supuesto. Aprobación final 93,17% (antes 93,44%) |
+| **Post: revisión manual** | 244 | Retiene el 12,5% del TPV y el **23,6% del $ de fraude**. Demora promedio de 0,88 días |
+| **Post: retención automática** | 8.620 | Retiene el 5,7% del TPV y el 9,7% del $ de fraude. Demora de 0,40 días |
+| **Post: ambas** | 8.864 | Retiene el 18,3% del TPV y el **33,3% del $ de fraude**. Demora de 1,28 días |
+
+Entre rechazo y retención se evita o retiene el **41,5% del $ de fraude**. El **58,5% pasa sin ningún control**.
+
+### Trade-off (`docs/reglas/trade_off.png`)
+
+El gráfico barre el corte de `risk_pct` y muestra cuánto fraude se gana y cuánto TPV se paga.
+
+- **Rechazar, volumen bajo y medio:** las curvas quedan por encima de la línea de equilibrio con margen de 1%. La regla elegida (1,78% del TPV bueno rechazado, 12,3% del fraude evitado) cae entre las líneas de equilibrio de 1% y 2%: rechazar conviene si el margen de Clip es menor que 1,71%.
+- **Rechazar, volumen alto:** la curva queda muy por debajo de las líneas de equilibrio y cerca del azar. Por eso no se rechaza.
+- **Retener:** las curvas quedan apenas por encima del azar (retener por riesgo el 15,6% del TPV capta el 26,7% del fraude). La mejora de "ambas" (18,3% del TPV, 33,3% del fraude) viene sobre todo de sumar a los merchants sin actividad, que el score no ve. Retener no pierde TPV, solo lo demora, así que no hay un equilibrio en dinero: el costo es la demora y la carga de revisión.
+
+### Segmentos para los emisores (bonus)
+
+Se agrupan las transacciones aprobadas en tres paquetes: **alto** (merchants de las reglas de rechazo o `risk_pct` ≥ 0,99), **medio** (revisión, retención automática o `risk_pct` entre 0,95 y 0,99) y **bajo** (el resto).
+
+| Segmento | Merchants | % transacciones | % TPV | Tasa de fraude |
+|---|---:|---:|---:|---:|
+| Bajo | 28.360 | 84,0% | 77,0% | 0,026% |
+| Medio | 9.582 | 13,6% | 16,2% | 0,090% |
+| Alto | 1.411 | 2,4% | 6,8% | 0,146% |
+
+El paquete principal (bajo) tiene una tasa de fraude 31% menor que el promedio de lo aprobado (0,037%). Mandar los otros dos paquetes por separado cuida la reputación frente a los emisores.
+
+### Chequeos y límites
+
+- **Estabilidad por mitades de merchants.** Pre: el fraude evitado es de 11,2% y 13,4%, y el equilibrio de 1,35% y 2,20%, así que la regla de rechazo se sostiene. **Post: el fraude retenido va de 45,0% a 21,5%.** La retención depende de pocos merchants.
+- **Sin el merchant con más fraude** (`M46B66AE0E309595B`): el rechazo no cambia (13,3% del $) y la retención baja de 33,3% a 27,4%.
+- **La estructura y los cortes se eligieron mirando estas mismas transacciones.** Las mitades muestran estabilidad, pero no son una evaluación independiente: no hay otro período.
+- **El equilibrio de 1,71% depende del margen supuesto.** Si el margen real de Clip es mayor, rechazar deja de convenir.
+- **El 58,5% del $ de fraude pasa sin control:** fraude de merchants de volumen alto o de riesgo bajo que el score no ve.
+- **Hallazgo sin usar:** el fraude es 13 veces más frecuente en transacciones sin tarjeta presente (CNP: 0,41%, contra 0,03% en tarjeta presente), y pesa más en monto (mediana de $684 contra $147). No es parte del score por merchant y no se usó en las reglas. Una regla por tipo de pago o por monto es la mejora más clara.

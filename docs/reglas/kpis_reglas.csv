@@ -1,0 +1,5 @@
+regla,merchants,transacciones rechazadas,fraude evitado (txns),fraude evitado (% del $),TPV bueno rechazado (% del bueno),equilibrio,beneficio neto ($ millones),aprobación final,TPV retenido (%),fraude retenido (txns),fraude retenido (% del $),"demora promedio (días, TPV bueno)"
+Pre: rechazar,1477,19193.0,165.0,0.12307,0.01777,0.01713,0.37896,0.93168,,,,
+Post: revisión manual,244,,,,,,,,0.12542,518.0,0.2364,0.8762
+Post: retención automática,8620,,,,,,,,0.05753,150.0,0.09671,0.4021
+Post: ambas,8864,,,,,,,,0.18295,668.0,0.33311,1.2783
