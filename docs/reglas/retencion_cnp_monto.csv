@@ -1,0 +1,6 @@
+regla,merchants,TPV retenido (%),fraude retenido (txns),fraude retenido (% del $),"demora promedio (días, TPV bueno)",transacciones
+Actual: revisión + retención automática,8864,0.18295,668,0.33311,1.2783,995861
+Nueva: CNP con monto >= 500,5785,0.08024,216,0.23725,0.55922,40297
+Nueva: monto >= 20.000,2436,0.1177,63,0.34021,0.82043,8767
+Nuevas: ambas,7304,0.16441,264,0.48281,1.14597,47057
+Actual + nuevas,14111,0.3056,822,0.68569,2.13331,1031095

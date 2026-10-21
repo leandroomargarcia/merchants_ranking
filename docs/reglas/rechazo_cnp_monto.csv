@@ -1,0 +1,5 @@
+regla,fraude evitado (% del $),TPV bueno rechazado (% del bueno),equilibrio
+Rechazar monto >= 20.000,0.32329,0.12043,0.00664
+Rechazar monto >= 5.000,0.7496,0.29685,0.00624
+Rechazar todo CNP,0.27629,0.08515,0.00802
+Rechazar CNP con monto >= 500,0.27449,0.08377,0.0081
