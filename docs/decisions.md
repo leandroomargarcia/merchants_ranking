@@ -252,48 +252,112 @@ La tasa no baja de corrido hacia el 0. En 0–0,50 hay merchants con muy pocas t
 
 ## 5 · Reglas de pre y post autorización
 
-Fuente: `notebooks/07_reglas.ipynb`. 
+Fuente: `notebooks/07_reglas.ipynb`.
 
-Las transacciones (octubre a diciembre) no se usaron para entrenar: son el conjunto independiente para medir el impacto. Las reglas combinan `risk_pct` con el **volumen** del merchant (intentos en los 30 días hasta el 30-sep: sin actividad, baja 1–9, media 10–99, alta 100 o más), porque el score ordena el fraude solo en parte (sección 4). En volumen alto casi no separa: con riesgo ≥ 95% la tasa de fraude es 0,05%–0,07%, contra 0,4%–1,1% en volumen bajo y medio. El cruce está en `docs/reglas/tasa_por_volumen.png`.
+Las transacciones de octubre a diciembre no se usaron para entrenar: ahí se mide el impacto. El volumen es la cantidad de intentos en los 30 días hasta el 30-sep: sin actividad, baja 1–9, media 10–99, alta 100 o más. Supuestos que no están en los datos: margen de Clip de 1% sobre el TPV, y retención de 7 días.
 
-**Supuestos que no están en los datos:** margen de Clip sobre el TPV de 1% y retención de pagos de 7 días.
+Rechazar exige un equilibrio (fraude evitado en $ / TPV bueno rechazado) de al menos 1,5%. Los cortes están en `tabla_de_cortes.csv`.
 
-### Las reglas
+### Pre-autorización
 
-
-| Etapa                          | Regla                                                                         | Por qué                                                                                                                                     |
-| ------------------------------ | ----------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Pre-autorización: rechazar** | `risk_pct` ≥ 0,90 y volumen **bajo**; o `risk_pct` ≥ 0,99 y volumen **medio** | Donde el score discrimina y el equilibrio supera con holgura el margen (1,56% y 2,34% contra 1%)                                            |
-|                                | No se rechaza a volumen **alto**                                              | El score no separa el fraude y rechazar costaría mucho TPV bueno (con corte 0,95: 12% del TPV bueno para evitar 21% del fraude)             |
-| **Post-autorización: retener** | **Revisión manual:** volumen alto y `risk_pct` ≥ 0,95                         | 244 merchants y mucho TPV: se retiene y se revisa, sin rechazar                                                                             |
-|                                | **Retención automática de 7 días:** merchants sin actividad en 30 días        | El score los pone en el riesgo más bajo (el coeficiente de `sin_actividad_7d` es negativo), pero su tasa de fraude es 2,4 veces el promedio |
-|                                | El resto, por el score                                                        | Se paga de inmediato. Las retenciones por tipo de pago y por monto están más abajo                                                          |
+Se rechaza volumen bajo con riesgo ≥ 0,90, o volumen medio con riesgo ≥ 0,99. Volumen alto no se rechaza.
 
 
-**Criterio de los cortes:** una regla de rechazo debe tener un *equilibrio* (fraude evitado en $ / TPV bueno rechazado) de al menos 1,5%, con el margen supuesto de 1%. Los cortes se compararon en `tabla_de_cortes.csv`.
-
-### KPIs de negocio
-
-Sobre lo aprobado (6.615.456 transacciones, TPV $3.000 millones, fraude $7,4 millones = 0,247% del TPV):
-
-
-|                                | Merchants | Resultado                                                                                                                                                                                                                              |
-| ------------------------------ | --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Pre: rechazar**              | 1.477     | 19.193 transacciones rechazadas. **Fraude evitado: 165 transacciones, $0,91 millones (12,3% del $).** TPV bueno rechazado: **$53,2 millones (1,78%)**. Equilibrio 1,71%. Beneficio neto de $0,38 millones con el margen supuesto. Aprobación final 93,17% (antes 93,44%) |
-| **Post: revisión manual**      | 244       | Retiene el 12,5% del TPV y el **23,6% del $ de fraude**. Demora promedio de 0,88 días                                                                                                                                                  |
-| **Post: retención automática** | 8.620     | Retiene el 5,7% del TPV y el 9,7% del $ de fraude. Demora de 0,40 días                                                                                                                                                                 |
-| **Post: ambas**                | 8.864     | Retiene el 18,3% del TPV y el **33,3% del $ de fraude**. Demora de 1,28 días                                                                                                                                                           |
+| Volumen | Corte | Equilibrio | Decisión                                      |
+| ------- | ----- | ---------- | --------------------------------------------- |
+| Bajo    | 0,90  | 1,56%      | Rechazar                                      |
+| Medio   | 0,99  | 2,34%      | Rechazar                                      |
+| Alto    | 0,95  | 0,42%      | No rechazar. Revisar, en la post-autorización |
 
 
-Entre rechazo y retención se evita o retiene el **41,5% del $ de fraude**. El **58,5% pasa sin ningún control**.
+Con riesgo ≥ 95% la tasa de fraude del volumen alto se queda en 0,05%–0,07%, contra 0,4%–1,1% en volumen bajo y medio.
 
-### Trade-off (`docs/reglas/trade_off.png`)
+![Tasa de fraude por volumen y corte de riesgo](reglas/tasa_por_volumen.png)
 
-El gráfico barre el corte de `risk_pct` y muestra cuánto fraude se gana y cuánto TPV se paga.
+Rechazar el alto a 0,95 entrega el 12% del TPV bueno para evitar el 21% del fraude. El gráfico de abajo barre el puesto del score. A la izquierda, fraude evitado contra TPV bueno rechazado, con las líneas de equilibrio: la curva de volumen alto queda debajo; las de bajo y medio quedan arriba. A la derecha, fraude retenido contra TPV retenido, con la línea de azar.
 
-- **Rechazar, volumen bajo y medio:** las curvas quedan por encima de la línea de equilibrio con margen de 1%. La regla elegida (1,78% del TPV bueno rechazado, 12,3% del fraude evitado) cae entre las líneas de equilibrio de 1% y 2%: rechazar conviene si el margen de Clip es menor que 1,71%.
-- **Rechazar, volumen alto:** la curva queda muy por debajo de las líneas de equilibrio y cerca del azar. Por eso no se rechaza.
-- **Retener:** las curvas quedan apenas por encima del azar (retener por riesgo el 15,6% del TPV capta el 26,7% del fraude). La mejora de "ambas" (18,3% del TPV, 33,3% del fraude) viene sobre todo de sumar a los merchants sin actividad, que el score no ve. Retener no pierde TPV, solo lo demora, así que no hay un equilibrio en dinero: el costo es la demora y la carga de revisión.
+![Fraude evitado y fraude retenido según el corte de riesgo](reglas/trade_off.png)
+
+Sobre lo aprobado (6.615.456 transacciones, TPV $3.000 millones, fraude $7,4 millones = 0,247% del TPV), la regla junta evita **$0,91 millones** de fraude (165 transacciones, 12,3% del $) y rechaza **$53,2 millones** de TPV bueno (1,78%). Equilibrio 1,71%, beneficio neto $0,38 millones. En el panel izquierdo cae entre las líneas de margen 1% y 2%: conviene si el margen real de Clip es menor que 1,71%. Aprobación final 93,17% (antes 93,44%), 1.477 merchants.
+
+### Post-autorización
+
+La consigna pide, entre lo ya aprobado, a quién se le paga enseguida y a quién se le retiene el pago. La venta se aprueba. Retener demora el pago al merchant.
+
+**Revisión manual:** volumen alto y riesgo ≥ 0,95. Son los merchants que la tabla de arriba no rechaza. El pago se frena y lo mira una persona.
+
+**Retención de 7 días, sin revisión:** merchants sin actividad. El coeficiente de `sin_actividad_7d` es negativo, así que el score los deja abajo, y su tasa de fraude es 2,4 veces el promedio. En el panel derecho del gráfico de arriba, retener solo por el puesto queda junto a la línea de azar. El círculo rojo es el corte 0,95. La estrella suma a estos merchants: es la fila «Ambas».
+
+
+| Punto del panel derecho                       | TPV retenido | Fraude retenido |
+| --------------------------------------------- | ------------ | --------------- |
+| Corte 0,95, solo por el puesto (círculo rojo) | 15,6%        | 26,7%           |
+
+
+**El resto se paga enseguida.**
+
+
+| Regla                  | Merchants | Resultado                                                                   |
+| ---------------------- | --------- | --------------------------------------------------------------------------- |
+| Revisión manual        | 244       | 12,5% del TPV y **23,6% del $ de fraude**. Demora 0,88 días                 |
+| Retención automática   | 8.620     | 5,7% del TPV y 9,7% del $ de fraude. Demora 0,40 días                       |
+| **Ambas**              | 8.864     | 18,3% del TPV y **33,3% del $ de fraude**. Demora 1,28 días                 |
+
+
+Rechazo más estas dos retenciones cubre el **41,5% del $ de fraude**. Pasa el **58,5%**.
+
+### Tipo de pago y monto
+
+El 58,5% que pasa es fraude que el score no ve: merchants chicos que venden sin tarjeta presente. Estas reglas miran la transacción, el tipo de pago y el monto, que están disponibles al autorizar.
+
+En lo aprobado, el fraude es el 0,55% de las transacciones CNP y el 0,032% de las de tarjeta presente: unas 17 veces. Sobre todas las transacciones, incluidas las rechazadas, la relación es de unas 13 veces (0,41% contra 0,032%). El monto mediano de una transacción CNP es de unos $1.330, contra $144 en tarjeta presente.
+
+Rechazar por tipo de pago o por monto queda debajo del 1,5%:
+
+
+| Regla de rechazo    | Fraude evitado (% del $) | TPV bueno rechazado | Equilibrio |
+| ------------------- | ------------------------ | ------------------- | ---------- |
+| Monto ≥ 5.000       | 75,0%                    | 29,7%               | 0,62%      |
+| Monto ≥ 20.000      | 32,3%                    | 12,0%               | 0,66%      |
+| Todo CNP            | 27,6%                    | 8,5%                | 0,80%      |
+| CNP con monto ≥ 500 | 27,5%                    | 8,4%                | 0,81%      |
+
+
+Se retiene, sobre lo que queda aprobado después del rechazo, **CNP con monto de 500 o más**, o **monto de 20.000 o más** de cualquier tipo. El gráfico recorre el monto mínimo. La línea naranja es el balance de retener: el fraude que se demora, sin restar margen, porque el TPV no se pierde. La gris es el balance de rechazar, fraude en $ menos el 1% del TPV bueno. La raya horizontal es cero y el círculo rojo es el corte. La gris queda debajo de cero en todo el recorrido.
+
+![Balance de retener y de rechazar según el monto mínimo](reglas/cortes_monto.png)
+
+
+| Corte          | Balance de retener | Fraude si se rechaza | Margen si se rechaza | Balance de rechazar |
+| -------------- | ------------------ | -------------------- | -------------------- | ------------------- |
+| CNP ≥ 500      | +$1,54 millones    | $2,03 millones       | $2,51 millones       | −$0,48 millones     |
+| Monto ≥ 20.000 | +$2,21 millones    | $2,39 millones       | $3,60 millones       | −$1,21 millones     |
+
+
+El fraude de «retener» es el que queda después de la regla de rechazo. El de «rechazar» se mide sobre todas las transacciones aprobadas.
+
+
+| Retención                            | TPV retenido | Fraude retenido (% del $) | Demora promedio | Transacciones |
+| ------------------------------------ | ------------ | ------------------------- | --------------- | ------------- |
+| Actual: revisión manual + automática | 18,3%        | 33,3%                     | 1,28 días       | 995.861       |
+| Nueva: CNP con monto ≥ 500           | 8,0%         | 23,7%                     | 0,56 días       | 40.297        |
+| Nueva: monto ≥ 20.000                | 11,8%        | 34,0%                     | 0,82 días       | 8.767         |
+| Nuevas: ambas                        | 16,4%        | 48,3%                     | 1,15 días       | 47.057        |
+| **Actual + nuevas**                  | **30,6%**    | **68,6%**                 | **2,13 días**   | 1.031.095     |
+
+
+Las nuevas suman 12,3 puntos de TPV demorado y 35,3 puntos de fraude retenido: unas 2,9 veces más fraude que TPV. Junto con el rechazo, lo evitado o retenido pasa de 41,5% a cerca del 72%. El monto alto son unas 100 transacciones por día. El CNP toma fraude que el score no ve: el 91% de esos merchants no está en el 5% más riesgoso.
+
+### Límites
+
+- Los cortes se eligieron mirando estas mismas transacciones de octubre a diciembre. Las mitades de merchants son un chequeo de estabilidad, no otro período. Las transacciones no tienen fecha, así que tampoco se puede ver si el corte se sostiene en el tiempo.
+- Mitades del rechazo: fraude evitado 11,2% y 13,4%; equilibrio 1,35% y 2,20%.
+- Mitades de la retención del score: el fraude retenido va de 45,0% a 21,5%. Depende de pocos merchants.
+- Mitades de las reglas nuevas: el monto alto retiene 36,8% y 31,9% del fraude; el CNP, 27,3% y 21,0%.
+- Sin el merchant con más fraude (`M46B66AE0E309595B`): el rechazo queda en 13,3% del $. La retención del score baja de 33,3% a 27,4%. La retención completa baja de 68,6% a 65,8%.
+- El fraude CNP está concentrado: 138 merchants, los 10 mayores suman el 58% del $, el mayor el 18%.
+- La demora de «Actual + nuevas» sale del supuesto de 7 días.
+- Con las reglas de tipo de pago y de monto, lo que pasa sin control baja del 58,5% a cerca del 28%.
 
 ### Segmentos para los emisores (bonus)
 
@@ -308,52 +372,4 @@ Se agrupan las transacciones aprobadas en tres paquetes: **alto** (merchants de 
 
 
 El paquete principal (bajo) tiene una tasa de fraude 31% menor que el promedio de lo aprobado (0,037%). Mandar los otros dos paquetes por separado cuida la reputación frente a los emisores.
-
-### Retención por tipo de pago y por monto
-
-El score es por merchant y no ve el fraude de los merchants chicos que venden sin tarjeta presente (CNP). Estas reglas miran la transacción: el tipo de pago y el monto, que están disponibles al autorizar.
-
-En lo aprobado, el fraude es el 0,55% de las transacciones CNP y el 0,032% de las de tarjeta presente: unas 17 veces. Sobre todas las transacciones, incluidas las rechazadas, la relación es de unas 13 veces (0,41% contra 0,032%). El monto mediano de una transacción CNP es de unos $1.330, contra $144 en tarjeta presente.
-
-**Rechazar por tipo de pago o monto no conviene.** El equilibrio queda entre 0,6% y 0,8%, por debajo del 1,5% del criterio de arriba. El fraude de los montos altos pesa mucho en dólares, pero rechazar esas transacciones cuesta casi lo mismo en TPV bueno.
-
-
-| Regla de rechazo    | Fraude evitado (% del $) | TPV bueno rechazado | Equilibrio |
-| ------------------- | ------------------------ | ------------------- | ---------- |
-| Monto ≥ 5.000       | 75,0%                    | 29,7%               | 0,62%      |
-| Monto ≥ 20.000      | 32,3%                    | 12,0%               | 0,66%      |
-| Todo CNP            | 27,6%                    | 8,5%                | 0,80%      |
-| CNP con monto ≥ 500 | 27,5%                    | 8,4%                | 0,81%      |
-
-
-**Retener sí.** No se pierde TPV, solo se demora. Se retiene, sobre lo que queda aprobado después del rechazo, toda transacción que cumpla alguna de dos condiciones: **CNP con monto de 500 o más**, o **monto de 20.000 o más** (cualquier tipo).
-
-
-| Retención                            | TPV retenido | Fraude retenido (% del $) | Demora promedio | Transacciones |
-| ------------------------------------ | ------------ | ------------------------- | --------------- | ------------- |
-| Actual: revisión manual + automática | 18,3%        | 33,3%                     | 1,28 días       | 995.861       |
-| Nueva: CNP con monto ≥ 500           | 8,0%         | 23,7%                     | 0,56 días       | 40.297        |
-| Nueva: monto ≥ 20.000                | 11,8%        | 34,0%                     | 0,82 días       | 8.767         |
-| Nuevas: ambas                        | 16,4%        | 48,3%                     | 1,15 días       | 47.057        |
-| **Actual + nuevas**                  | **30,6%**    | **68,6%**                 | **2,13 días**   | 1.031.095     |
-
-
-Las nuevas suman 12,3 puntos de TPV demorado y 35,3 puntos de fraude retenido: unas 2,9 veces más fraude que TPV. Junto con el rechazo, el fraude evitado o retenido pasa de 41,5% a cerca del 72% (12,3% evitado por el rechazo, más 68,6% de lo que queda). Lo que más aporta es el monto alto: son 8.767 transacciones en tres meses (unas 100 por día), un volumen manejable para revisión manual. La regla CNP son 40.297, y toma el fraude que el score no ve: el 91% de los merchants con CNP no está en el 5% más riesgoso.
-
-**Límites**
-
-- Los cortes (500 y 20.000) se eligieron mirando estas mismas transacciones, igual que el resto de las reglas.
-- Las transacciones no tienen fecha, así que no se puede probar estabilidad en el tiempo.
-- Entre mitades de merchants el monto alto se sostiene (36,8% y 31,9% del fraude retenido); el CNP varía más (27,3% y 21,0%). Sin el merchant con más fraude (`M46B66AE…`), la retención completa pasa de 68,6% a 65,8%.
-- **El fraude CNP está concentrado:** 138 merchants con fraude, y los 10 mayores suman el 58% del $ (el mayor, el 18%). Es la parte más frágil.
-- Retener cuesta en operación y en demora: la regla completa demora 2,13 días en promedio el TPV bueno, contra 1,28 de la actual. Depende del supuesto de 7 días de retención, que no está en los datos.
-- Cerca del 28% del $ de fraude sigue pasando sin ningún control. Con solo las reglas del score, ese resto es el 58,5%.
-
-### Chequeos y límites
-
-- **Estabilidad por mitades de merchants.** Pre: el fraude evitado es de 11,2% y 13,4%, y el equilibrio de 1,35% y 2,20%, así que la regla de rechazo se sostiene. **Post: el fraude retenido va de 45,0% a 21,5%.** La retención depende de pocos merchants.
-- **Sin el merchant con más fraude** (`M46B66AE0E309595B`): el rechazo no cambia (13,3% del $) y la retención baja de 33,3% a 27,4%.
-- **La estructura y los cortes se eligieron mirando estas mismas transacciones.** Las mitades muestran estabilidad, pero no son una evaluación independiente: no hay otro período.
-- **El equilibrio de 1,71% depende del margen supuesto.** Si el margen real de Clip es mayor, rechazar deja de convenir.
-- **Con solo las reglas del score, el 58,5% del $ de fraude pasa sin control:** fraude de merchants de volumen alto o de riesgo bajo que el score no ve. Las retenciones por tipo de pago y por monto bajan ese resto a cerca del 28%.
 

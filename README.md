@@ -18,10 +18,10 @@ Clip agrupa merchants en afiliaciones que los emisores evalúan en conjunto: uno
 
 **Reglas.** Los cortes se definen por percentil de score (la probabilidad no está calibrada) y se combinan con el volumen del merchant:
 - *Pre-autorización:* rechazar volumen bajo con riesgo ≥ 90% y volumen medio con riesgo ≥ 99%.
-- *Post-autorización:* revisión manual para volumen alto con riesgo ≥ 95%, y retención de 7 días para merchants sin actividad.
-- *Bonus:* tres paquetes de transacciones (bajo, medio, alto riesgo) para los emisores.
+- *Post-autorización:* revisión manual para volumen alto con riesgo ≥ 95%, retención de 7 días para merchants sin actividad, y retener la transacción si es CNP de $500 o más, o de $20.000 o más de cualquier tipo.
+- *Bonus:* tres paquetes sobre lo aprobado (bajo, medio, alto). El principal es el bajo.
 
-Con los supuestos de margen de Clip de 1% y retención de 7 días, el rechazo evita el 12,3% del $ de fraude con 1,78% del TPV bueno rechazado; rechazo más retención cubre el 41,5% del $ de fraude. El 58,5% restante pasa sin control. Detalle, trade-offs y chequeos en la sección 5 de `decisions.md`.
+Con los supuestos de margen de Clip de 1% y retención de 7 días, el rechazo evita el 12,3% del $ de fraude con 1,78% del TPV bueno rechazado. Rechazo más la retención del score cubre el 41,5%. Con las reglas de CNP y de monto, lo evitado o retenido llega a cerca del 72% y lo que pasa sin control baja a cerca del 28%. Detalle, trade-offs y chequeos en la sección 5 de `decisions.md`.
 
 ## Limitaciones
 

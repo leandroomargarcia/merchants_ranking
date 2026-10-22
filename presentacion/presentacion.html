@@ -352,6 +352,20 @@
     .dcard .bars .g { min-height: 4.5rem; }
     .dcard .card { padding: 0.6rem 0.8rem; }
     .dcard .card h3 { font-size: 0.9rem; }
+    .post-steps { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.9rem; align-items: stretch; }
+    .post-steps .axis { margin: 0; font-size: 0.78rem; color: var(--muted); line-height: 1.3; }
+    .post-steps .dcard { padding: 0.65rem 0.85rem 0.6rem; }
+    .post-steps .dcard .plot { min-height: 10rem; max-height: none; height: 10.6rem; }
+    .post-steps .dcard .plot.mini { min-height: 0; height: 5.6rem; }
+    .post-steps .cortes { display: flex; flex-direction: column; gap: 0.4rem; margin: 0.1rem 0 0.2rem; }
+    .post-steps .cortes .bloque { display: flex; flex-direction: column; gap: 0.12rem; }
+    .post-steps .cortes .quien { font-size: 0.78rem; font-weight: 650; color: var(--muted); }
+    .post-steps .cortes .bloque.on .quien { color: var(--accent); }
+    .post-steps .cortes .hbar { grid-template-columns: 3.4rem 1fr 3.1rem; gap: 0.35rem; }
+    .post-steps .cortes .hbar span { font-size: 0.72rem; color: var(--muted); }
+    .post-steps .cortes .hbar .n { font-size: 0.75rem; color: var(--ink); }
+    .post-foot { margin-top: 0.55rem; }
+    .post-foot p { margin: 0; font-size: 1.02rem; }
     .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.7rem; }
     .kpis .card { padding: 0.8rem 1rem; }
     .kpis .num { font-size: 1.6rem; }
@@ -674,37 +688,58 @@
     </section>
 
     <section class="slide" data-sec="Post-autorización">
-      <p class="kicker">Reglas de post-autorización · en qué se basa cada retención</p>
-      <h2>Se retiene el pago donde el fraude está más concentrado que el TPV.</h2>
-      <div class="row" style="grid-template-columns:1.5fr 1fr">
-        <div class="chart-block">
-          <h3>Por regla · % del TPV retenido y % del $ de fraude que cubre</h3>
-          <div class="hbars" style="gap:0.7rem;margin:0.5rem 0">
-            <div><div class="hbar" style="grid-template-columns:9.5rem 1fr 3.4rem"><span>revisión manual</span><div class="track"><div class="fill" style="width:36%;background:var(--navy)"></div></div><span class="n">12,5 %</span></div><div class="hbar" style="grid-template-columns:9.5rem 1fr 3.4rem"><span></span><div class="track"><div class="fill" style="width:34%"></div></div><span class="n">23,6 %</span></div></div>
-            <div><div class="hbar" style="grid-template-columns:9.5rem 1fr 3.4rem"><span>retención automática</span><div class="track"><div class="fill" style="width:17%;background:var(--navy)"></div></div><span class="n">5,8 %</span></div><div class="hbar" style="grid-template-columns:9.5rem 1fr 3.4rem"><span></span><div class="track"><div class="fill" style="width:14%"></div></div><span class="n">9,7 %</span></div></div>
-            <div><div class="hbar" style="grid-template-columns:9.5rem 1fr 3.4rem"><span>CNP ≥ $500</span><div class="track"><div class="fill" style="width:23%;background:var(--navy)"></div></div><span class="n">8,0 %</span></div><div class="hbar" style="grid-template-columns:9.5rem 1fr 3.4rem"><span></span><div class="track"><div class="fill" style="width:35%"></div></div><span class="n">23,7 %</span></div></div>
-            <div><div class="hbar" style="grid-template-columns:9.5rem 1fr 3.4rem"><span>monto ≥ $20.000</span><div class="track"><div class="fill" style="width:34%;background:var(--navy)"></div></div><span class="n">11,8 %</span></div><div class="hbar" style="grid-template-columns:9.5rem 1fr 3.4rem"><span></span><div class="track"><div class="fill" style="width:50%"></div></div><span class="n">34,0 %</span></div></div>
-            <div><div class="hbar" style="grid-template-columns:9.5rem 1fr 3.4rem"><span><strong>las cuatro juntas</strong></span><div class="track"><div class="fill" style="width:89%;background:var(--navy)"></div></div><span class="n">30,6 %</span></div><div class="hbar" style="grid-template-columns:9.5rem 1fr 3.4rem"><span></span><div class="track"><div class="fill" style="width:100%"></div></div><span class="n">68,6 %</span></div></div>
-          </div>
-          <p class="legend inl"><i style="background:#8fb7d6"></i>% del TPV retenido <i style="background:#e07a3d"></i>% del $ de fraude cubierto · la última fila no suma las anteriores: hay merchants en más de una</p>
+      <p class="kicker">Reglas de post-autorización · cómo se armó la retención</p>
+      <h2>La venta se aprueba. Se decide cuándo cobra el merchant.</h2>
+      <div class="post-steps">
+        <div class="dcard">
+          <p class="kicker">1 · Volumen alto</p>
+          <h3>Revisión manual</h3>
+          <p class="axis">Equilibrio de rechazar volumen alto. La línea marca el 1,5 %.</p>
+          <svg class="plot" data-chart='{"type":"gbars","w":360,"h":220,"yMax":2,"ticks":[0,1,2],"unit":" %","barUnit":true,"bar":48,"mark":1.5,"markLabel":"1,5 %","markColor":"#f4efe6","groups":["≥ 0,90","≥ 0,95","≥ 0,99"],"series":[{"name":"alto","color":"#c5d4a8","y":[0.24,0.42,0.09]}]}'></svg>
+          <p>Ningún corte llega al mínimo. A riesgo ≥ 95 % el equilibrio es 0,42 %: <strong>244 merchants</strong> los mira una persona. 12,5 % del TPV y 23,6 % del fraude.</p>
         </div>
-        <div style="display:flex;flex-direction:column;gap:0.7rem">
-          <div class="card">
-            <p class="kicker" style="margin-bottom:0.3rem">Por qué cada una</p>
-            <p><strong>Revisión manual</strong> en volumen alto con riesgo ≥ 95 %: 244 merchants, donde rechazar costaría demasiado TPV.</p>
-            <p><strong>CNP y monto alto</strong>: el 91 % de los merchants con CNP no está en el 5 % más riesgoso. Es fraude que el score no ve.</p>
-          </div>
-          <div class="card">
-            <p class="kicker" style="margin-bottom:0.3rem">Costo</p>
-            <p>Los pagos buenos se demoran <strong>2,1 días</strong> en promedio. Quedan sin control ≈ 28 % del $ de fraude, contra 58,5 % sin las reglas nuevas.</p>
-          </div>
+        <div class="dcard">
+          <p class="kicker">2 · Puesto del score</p>
+          <h3>Retención de 7 días</h3>
+          <p class="axis">% del fraude retenido contra % del TPV. La punteada es el azar.</p>
+          <svg class="plot" data-chart='{"type":"xy","w":360,"h":220,"xMin":0,"xMax":36,"yMin":0,"yMax":48,"xticks":[0,10,20,30],"ticks":[0,16,32,48],"unit":" %","series":[{"color":"#a79e91","dash":"5 4","x":[0,36],"y":[0,36]}],"dots":[{"x":15.6,"y":26.7,"r":8,"fill":"none","stroke":"#e07a3d","sw":2.4},{"x":18.3,"y":33.3,"shape":"star","r":9,"fill":"#e07a3d"}]}'></svg>
+          <p class="legend inl"><i style="background:transparent;border:2px solid #e07a3d"></i>solo el puesto 0,95 <i style="background:#e07a3d"></i>revisión + sin actividad</p>
+          <p>Retener solo por el puesto queda junto al azar. La estrella es la revisión manual más los sin actividad: <strong>18,3 % del TPV</strong> y <strong>33,3 % del fraude</strong>. Los sin actividad son 8.620 merchants y esperan 7 días.</p>
         </div>
+        <div class="dcard">
+          <p class="kicker">3 · La transacción</p>
+          <h3>CNP y monto alto</h3>
+          <p class="axis">CNP · millones de fraude retenido. La curva está plana y después baja.</p>
+          <svg class="plot mini" data-chart='{"type":"xy","w":360,"h":150,"logX":true,"xMin":50,"xMax":80000,"yMin":0,"yMax":2,"xticks":[100,500,5000,50000],"xtickLabels":["100","500","5 mil","50 mil"],"ticks":[0,1,2],"unit":"","series":[{"color":"#e07a3d","x":[50,100,200,500,1000,2000,5000,10000,20000,50000],"y":[1.55,1.55,1.55,1.54,1.5,1.44,1.25,0.9,0.61,0.06]}],"dots":[{"x":500,"y":1.54,"r":6,"fill":"none","stroke":"#f4efe6","sw":2.2}]}'></svg>
+          <p class="axis">Cualquier monto. Naranja: % del fraude. Azul: % del TPV.</p>
+          <div class="cortes">
+            <div class="bloque">
+              <div class="quien">≥ $5.000</div>
+              <div class="hbar"><span>fraude</span><div class="track"><div class="fill" style="width:100%"></div></div><span class="n">75 %</span></div>
+              <div class="hbar"><span>TPV</span><div class="track"><div class="fill" style="width:40%;background:var(--navy)"></div></div><span class="n">30 %</span></div>
+            </div>
+            <div class="bloque on">
+              <div class="quien">≥ $20.000 · el corte</div>
+              <div class="hbar"><span>fraude</span><div class="track"><div class="fill" style="width:44%"></div></div><span class="n">32 %</span></div>
+              <div class="hbar"><span>TPV</span><div class="track"><div class="fill" style="width:16%;background:var(--navy)"></div></div><span class="n">12 %</span></div>
+            </div>
+            <div class="bloque">
+              <div class="quien">≥ $50.000</div>
+              <div class="hbar"><span>fraude</span><div class="track"><div class="fill" style="width:3%"></div></div><span class="n">2 %</span></div>
+              <div class="hbar"><span>TPV</span><div class="track"><div class="fill" style="width:5%;background:var(--navy)"></div></div><span class="n">4 %</span></div>
+            </div>
+          </div>
+          <p>El CNP se mantiene en $1,5 M hasta $500 y después baja. En $20.000 el fraude queda en 32 % y el TPV en 12 %, unas 100 por día. En $5.000 el TPV sube a 30 %. En $50.000 los dos quedan cerca del 4 %.</p>
+        </div>
+      </div>
+      <div class="card post-foot">
+        <p>Lo que no cae en ninguna se paga enseguida. Un mismo pago puede entrar en más de una regla, así que los porcentajes no se suman. Juntas demoran el <strong>30,6 %</strong> del TPV y cubren el <strong>68,6 %</strong> del fraude, en <strong>2,13 días</strong>. Pasa cerca del 28 %.</p>
       </div>
     </section>
 
     <section class="slide tight" data-sec="Emisores">
       <p class="kicker">Bonus · paquetes de transacciones para los emisores</p>
-      <h2>Tres paquetes: la tasa de fraude sube 5,7 veces del bajo al alto.</h2>
+      <h2>El paquete principal queda 31 % debajo de lo aprobado.</h2>
       <div class="row" style="grid-template-columns:1.2fr 0.8fr">
         <div class="chart-block">
           <h3>Tasa de fraude por paquete · % de las transacciones aprobadas</h3>
@@ -724,10 +759,10 @@
           </tbody>
         </table>
       </div>
-      <div class="row three" style="margin-top:0.9rem">
-        <div class="card"><p class="kicker" style="margin-bottom:0.3rem">Alto</p><p>Merchants de las reglas de rechazo o con riesgo ≥ 99 %.</p></div>
-        <div class="card"><p class="kicker" style="margin-bottom:0.3rem">Medio</p><p>Revisión, retención automática o riesgo entre 95 y 99 %.</p></div>
-        <div class="card"><p class="kicker" style="margin-bottom:0.3rem">Bajo</p><p>El resto. Su tasa de fraude es 31 % menor que la de todo lo aprobado: el emisor recibe un paquete más limpio.</p></div>
+      <div class="row three" style="margin-top:0.6rem">
+        <div class="card"><p class="kicker" style="margin-bottom:0.3rem">Bajo · el principal</p><p>Aprobado, con actividad y riesgo menor a 0,95. El volumen bajo desde 0,90 se rechaza y no entra. Son 28.360 merchants.</p></div>
+        <div class="card"><p class="kicker" style="margin-bottom:0.3rem">Medio</p><p>Volumen alto con riesgo de 0,95 a 0,99: lo revisa una persona. Sin actividad por debajo de 0,99: espera 7 días. El resto de ese tramo también entra. Son 9.582 merchants.</p></div>
+        <div class="card"><p class="kicker" style="margin-bottom:0.3rem">Alto</p><p>Volumen bajo desde 0,90, o volumen medio desde 0,99: se rechaza. También entra quien llega a 0,99 en cualquier volumen. Son 1.411 merchants.</p></div>
       </div>
     </section>
 
@@ -832,24 +867,31 @@
           return n;
         };
         const txt = (x, y, t, extra) => el("text", Object.assign({ x, y, fill: "#a79e91", "font-size": fs, "font-family": "Outfit, sans-serif" }, extra), t);
+        const yMin = spec.yMin == null ? 0 : spec.yMin;
         const yMax = spec.yMax;
-        const yAt = (v) => T + ih - (v / yMax) * ih;
+        const yAt = (v) => T + ih - ((v - yMin) / (yMax - yMin)) * ih;
+        const num = (v) => String(v).replace(".", ",").replace("-", "−");
         (spec.ticks || [0, yMax / 2, yMax]).forEach((g) => {
           el("line", { x1: L, x2: L + iw, y1: yAt(g), y2: yAt(g), stroke: "#2c2722", "stroke-width": 1 });
-          txt(L - 8, yAt(g) + 4, `${String(g).replace(".", ",")}${unit}`, { "text-anchor": "end" });
+          txt(L - 8, yAt(g) + 4, `${num(g)}${unit}`, { "text-anchor": "end" });
         });
         if (spec.type === "gbars") {
           const ng = spec.groups.length, ns_ = spec.series.length;
           const gw = iw / ng, bw = Math.min(spec.bar || 30, (gw * 0.72) / ns_);
+          const y0 = yAt(0);
           spec.groups.forEach((g, gi) => {
             const cx = L + gw * (gi + 0.5);
             txt(cx, h - (wide ? 16 : 8), g, { "text-anchor": "middle" });
             spec.series.forEach((s, si) => {
               const x = cx - (ns_ * bw) / 2 + si * bw;
               const v = s.y[gi], y = yAt(v);
-              el("rect", { x: x + 1, y, width: Math.max(bw - (wide ? 4 : 2), 1), height: yAt(0) - y, rx: wide ? 3 : 2, fill: s.color });
-              const barText = String(v).replace(".", ",") + (spec.barUnit ? (spec.unit || "") : "");
-              txt(x + bw / 2, y - (wide ? 7 : 4), barText, { "text-anchor": "middle", fill: "#f4efe6", "font-size": vfs });
+              const top = Math.min(y0, y);
+              el("rect", { x: x + 1, y: top, width: Math.max(bw - (wide ? 4 : 2), 1), height: Math.max(Math.abs(y0 - y), 1), rx: wide ? 3 : 2, fill: s.color });
+              const abs = num(Math.abs(v));
+              const sign = v < 0 ? "−" : (spec.signed ? "+" : "");
+              const barText = sign + abs + (spec.barUnit ? (spec.unit || "") : "");
+              const labelY = v >= 0 ? top - (wide ? 7 : 4) : top + Math.abs(y0 - y) + (wide ? 14 : 11);
+              if (spec.labelMin == null || Math.abs(v) >= spec.labelMin) txt(x + bw / 2, labelY, barText, { "text-anchor": "middle", fill: "#f4efe6", "font-size": vfs });
             });
           });
           if (spec.mark != null) {
@@ -857,6 +899,40 @@
             el("line", { x1: L, x2: L + iw, y1: yAt(spec.mark), y2: yAt(spec.mark), stroke: markColor, "stroke-width": 1.6, "stroke-dasharray": "5 4" });
             txt(L + iw, yAt(spec.mark) - 5, spec.markLabel || "", { "text-anchor": "end", fill: markColor });
           }
+          return;
+        }
+        if (spec.type === "xy") {
+          const xMin = spec.xMin == null ? 0 : spec.xMin;
+          const xMax = spec.xMax;
+          const xAt = (v) => {
+            if (!spec.logX) return L + ((v - xMin) / (xMax - xMin)) * iw;
+            const a = Math.log(xMin), b = Math.log(xMax);
+            return L + ((Math.log(v) - a) / (b - a)) * iw;
+          };
+          (spec.xticks || []).forEach((g, k) => txt(xAt(g), h - (wide ? 16 : 8), (spec.xtickLabels && spec.xtickLabels[k]) || num(g), { "text-anchor": "middle" }));
+          (spec.series || []).forEach((s) => {
+            const pts = s.x.map((xv, k) => [xAt(xv), yAt(s.y[k])]);
+            if (pts.length < 2) return;
+            const attrs = { fill: "none", stroke: s.color, "stroke-width": 2, "stroke-linejoin": "round", "stroke-linecap": "round", points: pts.map((p) => p.join(",")).join(" ") };
+            if (s.dash) attrs["stroke-dasharray"] = s.dash;
+            el("polyline", attrs);
+          });
+          const star = (cx, cy, r) => {
+            const pts = [];
+            for (let k = 0; k < 10; k++) {
+              const rad = k % 2 === 0 ? r : r * 0.42;
+              const a = -Math.PI / 2 + k * Math.PI / 5;
+              pts.push(`${cx + rad * Math.cos(a)},${cy + rad * Math.sin(a)}`);
+            }
+            return pts.join(" ");
+          };
+          (spec.dots || []).forEach((d) => {
+            const cx = xAt(d.x), cy = yAt(d.y), r = d.r || 6;
+            if (d.shape === "star") el("polygon", { points: star(cx, cy, r), fill: d.fill || "#e07a3d" });
+            else if (d.shape === "triangle") el("polygon", { points: `${cx},${cy - r} ${cx - r * 0.9},${cy + r * 0.75} ${cx + r * 0.9},${cy + r * 0.75}`, fill: d.fill || "#c5d4a8" });
+            else el("circle", { cx, cy, r, fill: d.fill || "none", stroke: d.stroke || "#e07a3d", "stroke-width": d.sw || 2.2 });
+            if (d.label) txt(cx + (d.dx || 8), cy + (d.dy || -8), d.label, { fill: "#f4efe6", "text-anchor": d.anchor || "start", "font-size": vfs });
+          });
           return;
         }
         const xs = spec.x;
