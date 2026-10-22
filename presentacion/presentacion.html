@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Merchant Risk Scoring — Clip DS 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=Outfit:wght@380;500;650&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #12100e;
+      --ink: #f4efe6;
+      --muted: #a79e91;
+      --line: #2c2722;
+      --card: #1b1815;
+      --accent: #e07a3d;
+      --navy: #8fb7d6;
+      --ok: #c5d4a8;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; background: var(--bg); color: var(--ink); font-family: Outfit, sans-serif; font-weight: 380; }
+    body { overflow: hidden; }
+    h1, h2, h3 { font-family: Fraunces, serif; font-weight: 650; letter-spacing: -0.03em; margin: 0; }
+    p { margin: 0 0 0.7rem; line-height: 1.45; color: var(--ink); }
+    .muted { color: var(--muted); }
+    em { font-style: italic; color: var(--navy); font-family: Fraunces, serif; }
+    strong { font-weight: 650; }
+    kbd { font: 650 12px Outfit, sans-serif; border: 1px solid var(--line); padding: 0.1rem 0.4rem; border-radius: 6px; color: var(--muted); }
+    .deck { height: 100%; }
+    .slide {
+      display: none;
+      height: 100%;
+      padding: 3rem 5rem 5rem;
+      overflow: auto;
+    }
+    .slide.on { display: flex; flex-direction: column; }
+
+    .slide.on > * { flex-shrink: 0; }
+    .slide.on > .pb3 { flex: 1 0 auto; grid-template-rows: auto auto; }
+    .slide.on .flow { flex: 0 0 auto; min-height: 5.2rem; }
+    .slide.on .cobro-fig { min-height: 5.2rem; }
+    .slide.on .plot { flex-shrink: 0; }
+    .legend.inl { display: block; }
+    .legend.inl i { margin-left: 0.9rem; }
+    .legend.inl i:first-child { margin-left: 0; }
+    .slide.on .bars { flex: 0 0 auto; height: 8.5rem; }
+    .slide.on .bars .g { min-height: 0; }
+    .slide.on .flow { flex: 1 1 100%; }
+    .dsplit { display: grid; grid-template-columns: 1.9fr 0.8fr; gap: 0.8rem; align-items: start; }
+    .dmain { min-width: 0; display: flex; flex-direction: column; gap: 0.4rem; }
+    .dside { padding: 0.6rem 0.7rem; }
+    .dside h3 { font-size: 0.82rem; margin: 0 0 0.3rem; }
+    .dside .bars { height: 6.5rem; gap: 0.35rem; }
+    .dside p, .dside .muted { font-size: 0.74rem; }
+    .dside .lbl { font-size: 0.62rem; white-space: nowrap; }
+    .dcard .dmain .plot { min-height: 13rem; max-height: none; }
+    .tl { display: flex; gap: 4px; }
+    .tl-seg { display: flex; flex-direction: column; gap: 0.25rem; padding: 0.7rem 0.8rem; border-radius: 10px; min-width: 0; border: 1px solid var(--line); }
+    .tl-seg b { font-family: Fraunces, serif; font-size: 1.15rem; font-weight: 650; }
+    .tl-seg span { font-size: 0.8rem; color: var(--muted); line-height: 1.25; }
+    .tl-seg.tr { background: rgba(143,183,214,0.22); border-color: #3b5568; }
+    .tl-seg.va { background: rgba(197,212,168,0.2); border-color: #4a5a3a; }
+    .tl-seg.te { background: rgba(224,122,61,0.2); border-color: #6a3c20; }
+    .pipe { display: flex; align-items: stretch; gap: 0.5rem; }
+    .pipe .flow-arr { align-self: center; color: var(--muted); }
+    .pipe-step { flex: 1; min-width: 0; background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 0.8rem 0.9rem; display: flex; flex-direction: column; gap: 0.25rem; }
+    .pipe-step.main { border-color: #6a3c20; flex: 1.1; }
+    .pipe-step.out { border-color: #4a5a3a; }
+    .pipe-step .who { font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); font-weight: 650; }
+    .pipe-step .what { font-family: Fraunces, serif; font-size: 1.3rem; }
+    .pipe-step.main .what { color: var(--accent); }
+    .pipe-step.out .what { color: var(--ok); }
+    .pipe-step .why { font-size: 0.8rem; color: var(--muted); line-height: 1.3; }
+    .seg9 { display: grid; grid-template-columns: 0.7fr 2.3fr; gap: 0.8rem; flex: 1 0 auto; }
+    .seg9-l { display: flex; flex-direction: column; gap: 0.5rem; min-width: 0; }
+    .seg9-l .chart-block { padding: 0.4rem 0.7rem 0.3rem; }
+    .seg9-l .chart-block h3 { font-size: 0.82rem; margin: 0 0 0.15rem; }
+    .seg9-l .bars { height: 4.2rem; flex: 0 0 auto; gap: 0.3rem; min-height: 0; }
+    .seg9-l .bars .g { min-height: 0; gap: 0.2rem; }
+    .seg9-l .bars .lbl { font-size: 0.62rem; }
+    .seg9-r { display: grid; grid-template-columns: 1fr 1.5fr; gap: 0.8rem; min-width: 0; }
+    .seg9-r .chart-block { padding: 0.6rem 0.7rem 0.4rem; min-width: 0; }
+    .seg9-r .chart-block h3 { font-size: 0.88rem; }
+    .seg9-r .chart-block .plot { flex: 1 1 auto; min-height: 0 !important; max-height: none !important; width: 100%; height: auto; }
+    .kicker { font-size: 0.78rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); font-weight: 650; margin-bottom: 0.7rem; }
+    h1 { font-size: clamp(2.4rem, 5vw, 4.2rem); line-height: 1.05; }
+    h2 { font-size: clamp(1.7rem, 3.2vw, 2.6rem); line-height: 1.12; margin-bottom: 1.1rem; }
+    h3 { font-size: 1.15rem; margin: 0.4rem 0 0.35rem; }
+    .lead { font-size: 1.25rem; max-width: 42rem; color: #ebe4d8; }
+    .row { display: grid; gap: 1.25rem; }
+    .row.two { grid-template-columns: 1.1fr 0.9fr; }
+    .row.three { grid-template-columns: repeat(3, 1fr); }
+    .row.eq { grid-template-columns: 1fr 1fr; }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 1.1rem 1.2rem;
+    }
+    .card p:last-child { margin-bottom: 0; }
+    .negocio {
+      flex: 1;
+      min-height: 0;
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr 0.85fr;
+      grid-template-rows: 1fr auto;
+      gap: 1rem;
+      margin-top: 0.35rem;
+    }
+    .negocio-copy {
+      grid-row: 1;
+      grid-column: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 0.85rem;
+      max-width: 38rem;
+    }
+    .negocio-copy p { margin: 0; font-size: 1.12rem; line-height: 1.5; }
+    .negocio .card.stat {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 1.5rem 1.4rem;
+    }
+    .negocio .card.stat .num { font-size: 2.7rem; }
+    .negocio-hist { grid-column: 1 / -1; padding: 1.15rem 1.4rem; }
+    .negocio-hist p { margin: 0; font-size: 1.05rem; }
+    @media (max-width: 900px) {
+      .negocio { grid-template-columns: 1fr; grid-template-rows: auto; }
+      .negocio-copy, .negocio-hist { grid-column: 1; }
+    }
+    .cobro {
+      flex: 1;
+      min-height: 0;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: 1rem;
+      margin-top: 0.2rem;
+    }
+    .cobro-outcomes {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 0.85rem;
+    }
+    .cobro-outcomes .card {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 0.25rem;
+    }
+    .cobro-outcomes h3 { margin: 0 0 0.2rem; }
+    .cobro-outcomes p { margin: 0; font-size: 0.98rem; line-height: 1.4; }
+    .cobro-fig { min-height: 0; display: flex; }
+    .slide.on .cobro-fig.big { min-height: 9rem; }
+    .cobro-fig.big .flow { min-height: 9rem; }
+    .cobro-fig.big .flow-step { padding: 0.9rem 1rem; justify-content: center; gap: 0.35rem; }
+    .cobro-fig.big .flow-step .who { font-size: 0.95rem; }
+    .cobro-fig.big .flow-step .what { font-size: 1.7rem; line-height: 1.15; }
+    .cobro-fig.big .flow-step .why { font-size: 1.1rem; }
+    .cobro-fig.big .flow-arr { width: 20px; font-size: 1.7rem; }
+    .pipe.sol .pipe-step { padding: 1rem 1.1rem; gap: 0.4rem; justify-content: center; }
+    .pipe.sol .pipe-step .who { font-size: 0.8rem; }
+    .pipe.sol .pipe-step .what { font-size: 1.6rem; line-height: 1.15; }
+    .pipe.sol .pipe-step .why { font-size: 1rem; }
+    .pipe.sol .flow-arr { font-size: 1.6rem; }
+    .chips { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+    .chips span { font-size: 0.95rem; border: 1px solid #3a342e; border-radius: 99px; padding: 0.18rem 0.65rem; background: #221e1a; }
+    .sol-row { grid-template-columns: 0.75fr 1.05fr 1.5fr; gap: 1rem; }
+    .mix.cls { height: 1.7rem; margin-top: 0.7rem; }
+    .mix.cls .e { min-width: 14px; }
+    .sol-row .card p { font-size: 1.02rem; }
+    .mix { display: flex; height: 2.4rem; gap: 3px; margin-top: 0.5rem; }
+    .mix .h { flex: 97; display: flex; align-items: center; padding-left: 0.8rem; font-weight: 650; background: rgba(143,183,214,0.22); border: 1px solid #3b5568; border-radius: 8px; }
+    .mix .e { flex: 3; min-width: 10px; background: var(--accent); border-radius: 8px; }
+    .mix-lbl { display: flex; justify-content: space-between; gap: 1rem; margin-top: 0.3rem; font-size: 0.92rem; color: var(--muted); }
+    .mix-lbl span:last-child { color: var(--accent); font-weight: 650; text-align: right; }
+    .cobro-back { padding: 1.05rem 1.3rem; }
+    .cobro-back p { margin: 0; font-size: 1.05rem; }
+    @media (max-width: 900px) {
+      .cobro { grid-template-rows: auto; }
+      .cobro-outcomes { grid-template-columns: 1fr; }
+    }
+    .grow { flex: 1 0 auto; display: flex; flex-direction: column; gap: 0.85rem; }
+    .grow > .row, .grow > .split3, .grow > .chart-block { flex: 1 0 auto; }
+    .chart-block {
+      display: flex; flex-direction: column;
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 0.8rem 1rem 0.65rem;
+    }
+    .chart-block h3 { margin: 0 0 0.35rem; font-size: 0.95rem; }
+    .plot { flex: 1 1 auto; width: 100%; height: auto; min-height: 10.5rem; max-height: min(22rem, 40vh); display: block; }
+    .legend { display: flex; gap: 1rem; flex-wrap: wrap; font-size: 0.78rem; color: var(--muted); }
+    .legend i { display: inline-block; width: 9px; height: 9px; border-radius: 99px; margin-right: 0.35rem; vertical-align: -1px; }
+    .bars { display: flex; align-items: flex-end; gap: 0.55rem; flex: 1 1 auto; min-height: 9rem; }
+    .bars .g { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 0.35rem; min-width: 0; height: 100%; min-height: 8rem; }
+    .bars .cols { flex: 1; display: flex; align-items: flex-end; justify-content: center; gap: 3px; width: 100%; }
+    .bars .col { flex: 1; max-width: 28px; border-radius: 5px 5px 2px 2px; min-height: 2px; }
+    .bars .lbl { font-size: 0.72rem; color: var(--muted); }
+    .col.navy { background: var(--navy); }
+    .col.accent { background: var(--accent); }
+    .col.ok { background: var(--ok); }
+    .hbars { display: flex; flex-direction: column; gap: 0.7rem; }
+    .hbar { display: grid; grid-template-columns: 6.2rem 1fr 3.4rem; gap: 0.5rem; align-items: center; }
+    .hbar .track { height: 11px; background: #2c2722; border-radius: 99px; overflow: hidden; }
+    .hbar .fill { height: 100%; border-radius: 99px; background: var(--accent); }
+    .hbar .n { font-variant-numeric: tabular-nums; font-size: 0.85rem; }
+    .split3 { display: grid; grid-template-columns: 1.15fr 0.85fr 0.85fr; gap: 0.8rem; }
+    .flow { flex: 1; min-height: 0; display: flex; align-items: stretch; gap: 0.4rem; }
+    .flow-step {
+      flex: 1; background: var(--card); border: 1px solid var(--line);
+      border-radius: 14px; padding: 0.8rem 0.75rem;
+      display: flex; flex-direction: column; justify-content: center; gap: 0.18rem;
+    }
+    .flow-step .who { font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); font-weight: 650; }
+    .flow-step .what { font-family: Fraunces, serif; font-size: 1.12rem; }
+    .flow-step .why { font-size: 0.8rem; color: var(--muted); line-height: 1.3; }
+    .flow-step.bad { border-color: #5a2e22; }
+    .flow-step.bad .what { color: var(--accent); }
+    .flow-step.ok { border-color: #3d4a32; }
+    .flow-step.ok .what { color: var(--ok); }
+    .flow-step.skip { opacity: 0.55; }
+    .flow-arr { width: 12px; align-self: center; color: #5a5248; font-size: 1.15rem; }
+    .flow-note { font-size: 0.82rem; color: var(--accent); font-weight: 650; letter-spacing: 0.02em; }
+
+    .stack { display: flex; height: 22px; border-radius: 7px; overflow: hidden; background: #2c2722; }
+    .stack > div { height: 100%; }
+    .stack-row { display: grid; grid-template-columns: 5.6rem 1fr 3rem; gap: 0.5rem; align-items: center; }
+    .stack-row .n { font-family: Fraunces, serif; font-size: 1.05rem; text-align: right; }
+    .stack-row .t { font-size: 0.78rem; color: var(--muted); line-height: 1.15; }
+    .stack-row .t strong { color: var(--ink); }
+    .bars2 { display: flex; align-items: flex-end; gap: 0.45rem; flex: 1; min-height: 5.5rem; }
+    .bars2 .g { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 0.25rem; height: 100%; min-width: 0; }
+    .bars2 .cols { flex: 1; display: flex; align-items: flex-end; justify-content: center; gap: 3px; width: 100%; }
+    .bars2 .col { flex: 1; max-width: 18px; border-radius: 4px 4px 2px 2px; }
+    .bars2 .lbl { font-size: 0.72rem; color: var(--muted); }
+    .pb-grid { flex: 1; min-height: 0; display: grid; grid-template-columns: 1fr 1.6fr; grid-template-rows: 1.05fr 1fr; gap: 0.8rem; }
+    .pb-grid .chart-block { min-height: 0; }
+    .pb-grid .chart-block h3 { font-size: 0.88rem; }
+    .tr { display: flex; flex-direction: column; gap: 0.5rem; flex: 1; justify-content: center; }
+    .tr .card { padding: 0.55rem 0.8rem; display: flex; justify-content: space-between; align-items: center; gap: 0.6rem; }
+    .tr .card span { font-size: 0.85rem; color: var(--muted); }
+    .tr .card b { font-family: Fraunces, serif; font-size: 1.05rem; color: var(--accent); font-weight: 650; }
+    .cas { display: flex; align-items: center; gap: 0.3rem; flex: 1; }
+    .cas .st { flex: 1; text-align: center; background: #12100e; border: 1px solid var(--line); border-radius: 10px; padding: 0.5rem 0.2rem; }
+    .cas .st .f { font-family: Fraunces, serif; font-size: 1.25rem; color: var(--ink); }
+    .cas .st .p { font-size: 0.72rem; color: var(--muted); }
+    .cas .st.bf { border-color: #3d4a32; }
+    .cas .st.bf .f { color: var(--ok); font-size: 1rem; }
+    .cas .ar { color: #5a5248; font-size: 0.95rem; }
+    .cas-note { font-family: Fraunces, serif; font-size: 0.95rem; color: var(--navy); margin: 0.5rem 0 0; text-align: center; }
+    .piece-tag { font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); font-weight: 650; }
+
+    .pb3 { flex: 1; min-height: 0; display: grid; grid-template-columns: 1fr 1fr 1fr; grid-template-rows: 1.2fr 0.9fr; gap: 0.8rem; }
+    .pb3 .chart-block { min-height: 0; }
+    .pb3 .chart-block h3 { font-size: 0.88rem; }
+    .pb3 .span2 { grid-column: span 2; }
+    .tm-head, .tm { display: grid; grid-template-columns: 2.6rem 1fr 7.5rem 4.6rem; gap: 0.5rem; align-items: center; }
+    .tm-head { font-size: 0.68rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin: 0.1rem 0 0.15rem; }
+    .tm { padding: 0.28rem 0; border-top: 1px solid var(--line); }
+    .tm .fl { font-family: Fraunces, serif; font-size: 1.15rem; }
+    .tm .pbar { display: flex; align-items: center; gap: 0.5rem; }
+    .tm .pbar .trk { flex: 1; height: 12px; background: #2c2722; border-radius: 99px; overflow: hidden; }
+    .tm .pbar .trk i { display: block; height: 100%; background: var(--navy); border-radius: 99px; }
+    .tm .pbar b { font-weight: 500; font-size: 0.82rem; width: 2.6rem; text-align: right; font-variant-numeric: tabular-nums; }
+    .tm .cb { font-size: 0.85rem; color: var(--muted); text-align: center; }
+    .tm .cb strong { color: var(--ink); }
+    .tm .ap { font-family: Fraunces, serif; font-size: 1.05rem; color: var(--accent); text-align: right; font-variant-numeric: tabular-nums; }
+    .tm.tot { border-top: 1px solid #5a5248; }
+    .tm.tot .fl { font-size: 0.8rem; color: var(--muted); font-family: Outfit, sans-serif; }
+    .tm-eq { font-size: 0.8rem; color: var(--navy); font-family: Fraunces, serif; margin: 0.35rem 0 0; }
+    .mk { display: flex; align-items: flex-end; gap: 0.5rem; flex: 1; min-height: 4.5rem; }
+    .mk .g { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 0.2rem; height: 100%; }
+    .mk .v { font-size: 0.8rem; font-variant-numeric: tabular-nums; }
+    .mk .bw { flex: 1; width: 100%; display: flex; align-items: flex-end; justify-content: center; }
+    .mk .b { width: 70%; max-width: 40px; border-radius: 5px 5px 2px 2px; background: var(--accent); }
+    .mk .lbl { font-size: 0.74rem; color: var(--muted); }
+
+    .pbl { font-size: 0.92rem; line-height: 1.35; margin: 0 0 0.5rem; }
+    .pbl strong { color: var(--accent); font-weight: 650; }
+    .lad { display: flex; flex-direction: column; gap: 0.3rem; flex: 1; justify-content: center; }
+    .lad .r { display: grid; grid-template-columns: 1fr 3.6rem; gap: 0.5rem; align-items: center; font-size: 0.78rem; color: var(--muted); }
+    .lad .r i { display: block; height: 15px; border-radius: 5px; background: var(--navy); }
+    .lad .r.bf i { background: transparent; border: 1px dashed #5a5248; }
+    .lad .r span { text-align: right; }
+    .lad-note { font-size: 0.78rem; color: var(--muted); margin: 0.45rem 0 0; }
+    .lad-note strong { color: var(--ink); font-weight: 500; }
+
+    .tm2-head, .tm2 { display: grid; grid-template-columns: 5.6rem 4.8rem 3.6rem 1fr 4.4rem; gap: 0.55rem; align-items: center; }
+    .tm2-head { font-size: 0.64rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin: 0.1rem 0 0.15rem; line-height: 1.15; }
+    .tm2 { padding: 0.28rem 0; border-top: 1px solid var(--line); }
+    .tm2 .fl { font-family: Fraunces, serif; font-size: 1.15rem; }
+    .tm2 .nm { font-size: 0.85rem; font-variant-numeric: tabular-nums; color: var(--muted); }
+    .tm2 .pbar { display: flex; align-items: center; gap: 0.5rem; }
+    .tm2 .pbar .trk { flex: 1; height: 12px; background: #2c2722; border-radius: 99px; overflow: hidden; }
+    .tm2 .pbar .trk i { display: block; height: 100%; background: var(--navy); border-radius: 99px; }
+    .tm2 .pbar b { font-weight: 500; font-size: 0.82rem; width: 2.6rem; text-align: right; font-variant-numeric: tabular-nums; }
+    .tm2 .cb { font-size: 0.85rem; text-align: center; }
+    .tm2 .ap { font-family: Fraunces, serif; font-size: 1.05rem; color: var(--accent); text-align: right; font-variant-numeric: tabular-nums; }
+    .tm2.tot { border-top: 1px solid #5a5248; }
+    .tm2.tot .fl { font-size: 0.8rem; color: var(--muted); font-family: Outfit, sans-serif; }
+    .ev { position: relative; flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 0.5rem; }
+    .ev .r { display: grid; grid-template-columns: 1fr; gap: 0.1rem; }
+    .ev .r small { font-size: 0.72rem; color: var(--muted); }
+    .ev .trk { position: relative; height: 13px; background: #2c2722; border-radius: 6px; }
+    .ev .trk i { display: block; height: 100%; border-radius: 6px; background: #5a5248; }
+    .ev .trk i.f { background: var(--navy); }
+    .ev .mark { position: absolute; top: 0; bottom: 0; width: 0; border-left: 2px dashed var(--accent); }
+    .ev .mk-l { position: absolute; top: -2px; font-size: 0.7rem; color: var(--accent); transform: translateX(-50%); white-space: nowrap; }
+    .slide .res { gap: 1rem; }
+    .slide .res .kpis { flex: 1 1 auto; }
+    .slide .res .kpis .card { display: flex; flex-direction: column; justify-content: center; padding: 1rem 1.2rem; }
+    .slide .res .kpis .num { font-size: 2.3rem; }
+    .slide .res .kpis .num span { font-size: 0.85rem; margin-top: 0.5rem; }
+    .slide .res table { font-size: 1rem; flex: 0 0 auto; }
+    .slide .res th, .slide .res td { padding: 0.75rem 0.6rem; }
+    .stp { display: flex; flex-direction: column; gap: 0.6rem; }
+    .slide .dcard:not(.res) { justify-content: space-between; }
+    .stp .sub, .sub { margin: 0; font-size: 1rem; color: var(--muted); line-height: 1.35; }
+    .stp .sub strong { color: var(--ink); }
+    .eqn { margin: 0; font-family: Fraunces, serif; font-size: 1.35rem; color: var(--navy); }
+    .stp .cas .st { padding: 0.6rem 0.2rem; }
+    .stp .cas .st .f { font-size: 1rem; }
+    .stp .cas .st.bf .f { font-size: 1rem; }
+    .stp .pipe { gap: 0.3rem; }
+    .stp .pipe-step { padding: 0.8rem 0.8rem; border-radius: 12px; }
+    .stp .pipe-step .what { font-size: 1.3rem; }
+    .stp .pipe-step .why { font-size: 0.85rem; }
+    .stp .flow-arr { width: auto; transform: none; }
+    .slide .res .ab-bars { display: flex; flex-direction: column; gap: 0.5rem; }
+    .ab { display: grid; grid-template-columns: 5.6rem 1fr 4rem; gap: 0.6rem; align-items: center; }
+    .ab .nm { font-size: 0.9rem; color: var(--muted); }
+    .ab .trk { height: 24px; background: #2c2722; border-radius: 99px; overflow: hidden; }
+    .ab .trk i { display: block; height: 100%; background: var(--navy); border-radius: 99px; }
+    .ab .trk i.acc { background: var(--accent); }
+    .ab b { font-family: Fraunces, serif; font-size: 1.5rem; font-weight: 650; text-align: right; }
+    .hw { display: grid; grid-template-columns: 1.5rem 1fr; gap: 0.6rem; align-items: start; }
+    .hw b { font-family: Fraunces, serif; font-size: 1.1rem; color: var(--accent); line-height: 1.2; }
+    .hw p { margin: 0; font-size: 0.84rem; line-height: 1.38; }
+    .tag-ok { font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ok); font-weight: 650; }
+
+    .cols3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.8rem; flex: 1 0 auto; }
+    .cols2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; flex: 1 0 auto; }
+    .dcard { display: flex; flex-direction: column; gap: 0.45rem; background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 0.8rem 1rem 0.75rem; min-width: 0; }
+    .dcard .kicker { margin: 0; font-size: 0.68rem; }
+    .dcard h3 { font-size: 1.08rem; margin: 0; line-height: 1.2; }
+    .dcard p { margin: 0; font-size: 0.88rem; line-height: 1.4; }
+    .dcard .plot { min-height: 8rem; max-height: min(13.5rem, 28vh); }
+    .dcard .hbars { gap: 0.5rem; margin: 0.2rem 0; }
+    .dcard .bars { min-height: 5rem; }
+    .dcard .bars .g { min-height: 4.5rem; }
+    .dcard .card { padding: 0.6rem 0.8rem; }
+    .dcard .card h3 { font-size: 0.9rem; }
+    .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.7rem; }
+    .kpis .card { padding: 0.8rem 1rem; }
+    .kpis .num { font-size: 1.6rem; }
+    .tight table { font-size: 0.8rem; }
+    .tight th, .tight td { padding: 0.22rem 0.4rem; }
+    .tight .bars { min-height: 5.2rem; }
+    .tight .bars .g { min-height: 4.6rem; }
+    .tight .plot { min-height: 8rem; max-height: min(15rem, 30vh); }
+    .tight .chart-block h3 { margin-bottom: 0.2rem; }
+    .tight p { margin-bottom: 0.45rem; }
+    .tight ul { font-size: 0.9rem; }
+    @media (max-width: 900px) {
+      .split3 { grid-template-columns: 1fr; }
+      .flow { flex-direction: column; }
+      .flow-arr { transform: rotate(90deg); }
+    }
+    .num { font-family: Fraunces, serif; font-size: 2rem; font-weight: 650; color: var(--accent); line-height: 1; }
+    .num span { display: block; font-family: Outfit, sans-serif; font-size: 0.78rem; color: var(--muted); font-weight: 500; letter-spacing: 0.04em; margin-top: 0.35rem; }
+    ul { margin: 0; padding-left: 1.1rem; }
+    li { margin: 0.28rem 0; line-height: 1.4; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
+    th, td { text-align: left; padding: 0.38rem 0.5rem; border-bottom: 1px solid var(--line); }
+    th { color: var(--muted); font-weight: 500; font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; }
+    td.r, th.r { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .marcha-bar { display: flex; flex-wrap: wrap; gap: 0.45rem; align-items: center; margin-bottom: 0.6rem; }
+    .marcha-bar button {
+      font: inherit; font-size: 0.85rem; color: var(--ink); background: var(--card);
+      border: 1px solid var(--line); border-radius: 8px; padding: 0.35rem 0.7rem; cursor: pointer;
+    }
+    .marcha-bar button.main { background: var(--accent); color: #1a120c; border-color: var(--accent); font-weight: 650; }
+    .marcha-bar button:disabled { opacity: 0.35; cursor: default; }
+    .marcha-bar .cnt { color: var(--muted); font-size: 0.8rem; margin-left: auto; }
+    .marcha-expl { height: 6.2rem; overflow: auto; font-size: 0.95rem; line-height: 1.4; margin-bottom: 0.6rem; }
+    .marcha-expl .phase { display: inline-block; font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 650; color: var(--accent); border: 1px solid #5a4034; border-radius: 99px; padding: 0.1rem 0.5rem; margin-bottom: 0.35rem; }
+    .marcha-expl .f { display: block; margin-top: 0.4rem; font-variant-numeric: tabular-nums; background: #221e1a; border-radius: 8px; padding: 0.4rem 0.7rem; overflow-x: auto; white-space: nowrap; }
+    .marcha-expl .lista { font-family: Fraunces, serif; font-size: 1.35rem; color: var(--ok); margin-top: 0.35rem; }
+    .marcha table { font-size: 0.78rem; }
+    .marcha th, .marcha td { text-align: center; padding: 0.22rem 0.3rem; border: 1px solid var(--line); text-transform: none; letter-spacing: 0; font-weight: 500; }
+    .marcha th { background: #221e1a; color: var(--muted); font-size: 0.68rem; }
+    .marcha td.floor { text-align: left; font-weight: 650; white-space: nowrap; }
+    .marcha td.s { color: var(--muted); }
+    .marcha td.v { white-space: nowrap; }
+    .marcha td.v .val { font-weight: 650; font-variant-numeric: tabular-nums; font-size: 0.78rem; }
+    .marcha td.v .arr { margin-left: 0.35rem; font-size: 0.68rem; color: var(--muted); }
+    .marcha td.cur { background: var(--accent); color: #1a120c; }
+    .marcha td.cur .arr { color: #1a120c; }
+    .marcha td.cand { background: rgba(143, 183, 214, 0.16); }
+    .marcha td.best { background: var(--navy); color: #12100e; }
+    .marcha td.best .arr { color: #12100e; }
+    .marcha td.path { background: var(--ok); color: #12100e; }
+    .marcha td.path .arr { color: #12100e; }
+    .marcha-legend { display: flex; flex-wrap: wrap; gap: 0.9rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--muted); }
+    .marcha-legend i { display: inline-block; width: 0.7rem; height: 0.7rem; border-radius: 3px; margin-right: 0.3rem; vertical-align: -1px; }
+    .bar {
+      position: fixed; left: 0; right: 0; bottom: 0;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.7rem 1.4rem; background: linear-gradient(transparent, #0d0b0a 70%);
+      font-size: 0.8rem; color: var(--muted);
+    }
+    .dots { display: flex; gap: 0.28rem; flex-wrap: wrap; max-width: 55vw; justify-content: center; }
+    .dots button {
+      width: 7px; height: 7px; padding: 0; border: 0; border-radius: 99px;
+      background: #3a342e; cursor: pointer;
+    }
+    .dots button.on { background: var(--accent); width: 16px; }
+    .nav { display: flex; gap: 0.5rem; }
+    .nav button {
+      background: var(--card); color: var(--ink); border: 1px solid var(--line);
+      border-radius: 8px; padding: 0.35rem 0.7rem; cursor: pointer; font: inherit;
+    }
+    .formula {
+      font-family: Fraunces, serif; font-size: 1.55rem; background: var(--card);
+      border-left: 3px solid var(--accent); padding: 1rem 1.2rem; border-radius: 0 12px 12px 0;
+      margin: 1rem 0;
+    }
+    .tag { display: inline-block; font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ok); border: 1px solid #3d4a32; padding: 0.15rem 0.45rem; border-radius: 99px; }
+    @media (max-height: 760px) {
+      .slide { padding-top: 2.6rem; padding-bottom: 5rem; }
+      h2 { margin-bottom: 0.7rem; }
+    }
+    @media (max-width: 900px) {
+      .slide { padding: 3.2rem 1.2rem 4.5rem; }
+      .row.two, .row.three, .row.eq { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="deck" id="deck">
+
+    <section class="slide on" data-sec="Inicio">
+      <p class="kicker">Clip · Data Science Challenge 2026</p>
+      <h1>A qué merchant dejar pasar,<br />a cuál frenar.</h1>
+      <p class="lead" style="margin-top:1.4rem">Un score de riesgo por merchant, unido a 7,08 millones de transacciones, y las reglas de pre y post autorización que salen de él.</p>
+      <p style="margin-top:1.8rem;font-size:1.3rem;font-weight:650">Leandro Garcia</p>
+      <p class="muted" style="margin-top:auto;padding-top:2.4rem">Flechas o clic en los puntos. 15 diapositivas.</p>
+    </section>
+
+    <section class="slide tight" data-sec="Negocio">
+      <p class="kicker">El problema de negocio</p>
+      <h2>Unos pocos merchants riesgosos bajan la aprobación de todos.</h2>
+      <div class="pipe sol">
+        <div class="pipe-step"><div class="who">Merchants</div><div class="what">se agrupan</div><div class="why">Clip los junta en afiliaciones</div></div>
+        <div class="flow-arr">→</div>
+        <div class="pipe-step"><div class="who">Emisores</div><div class="what">evalúan en conjunto</div><div class="why">miran la afiliación, no al merchant</div></div>
+        <div class="flow-arr">→</div>
+        <div class="pipe-step main"><div class="who">Efecto</div><div class="what">aprobación baja</div><div class="why">pagan los buenos por los riesgosos</div></div>
+      </div>
+      <p class="kicker" style="margin:1.1rem 0 0.5rem">Dónde se puede actuar sobre una transacción</p>
+      <div class="flow">
+        <div class="flow-step"><div class="who">Transacción</div><div class="what">llega</div><div class="why">con el merchant_id</div></div>
+        <div class="flow-arr">→</div>
+        <div class="flow-step bad"><div class="who">Pre-autorización</div><div class="what">rechazar</div><div class="why">antes de ir al emisor: no le llega la señal mala</div></div>
+        <div class="flow-arr">→</div>
+        <div class="flow-step"><div class="who">Emisor</div><div class="what">aprueba o no</div><div class="why">decide con lo que recibe</div></div>
+        <div class="flow-arr">→</div>
+        <div class="flow-step ok"><div class="who">Post-autorización</div><div class="what">revisar o retener</div><div class="why">se aprobó, pero el pago al merchant espera</div></div>
+      </div>
+      <div class="row three" style="margin-top:1rem">
+        <div class="card"><p class="kicker" style="margin-bottom:0.3rem">1 · Modelo</p><p>Convertir <em>is_suspended</em> en un target justificado y entrenar.</p></div>
+        <div class="card"><p class="kicker" style="margin-bottom:0.3rem">2 · Score y join</p><p>Puntuar a cada merchant y unirlo a las transacciones por <em>merchant_id</em>.</p></div>
+        <div class="card"><p class="kicker" style="margin-bottom:0.3rem">3 · Reglas</p><p>Pre y post autorización, más paquetes para los emisores. KPIs del modelo y del negocio, por separado.</p></div>
+      </div>
+    </section>
+
+    <section class="slide tight" data-sec="Resultado">
+      <p class="kicker">El resultado en una lámina</p>
+      <h2>El score ordena bien al 5 % más riesgoso, y las reglas lo convierten en fraude evitado.</h2>
+      <div class="kpis">
+        <div class="card"><div class="num">10,6 de 12<span>suspensiones en el 5 % de mayor score · azar: 0,6</span></div></div>
+        <div class="card"><div class="num">12,3 %<span>del $ de fraude evitado al rechazar</span></div></div>
+        <div class="card"><div class="num">1,78 %<span>del TPV bueno rechazado</span></div></div>
+        <div class="card"><div class="num">≈ 72 %<span>del $ de fraude evitado o retenido</span></div></div>
+      </div>
+      <div class="row eq" style="margin-top:0.9rem">
+        <div class="card">
+          <p class="kicker" style="margin-bottom:0.4rem">KPIs del modelo</p>
+          <table>
+            <tr><td>Suspensiones en el top 5 %</td><td class="r">10,6 de 12</td></tr>
+            <tr><td>PR-AUC</td><td class="r">0,0216 · 60× la prevalencia</td></tr>
+            <tr><td>Validación</td><td class="r">por merchant, 5 folds × 10 semillas</td></tr>
+          </table>
+        </div>
+        <div class="card">
+          <p class="kicker" style="margin-bottom:0.4rem">KPIs del negocio</p>
+          <table>
+            <tr><td>Aprobación final</td><td class="r">93,17 %</td></tr>
+            <tr><td>TPV demorado por retención</td><td class="r">30,6 % · 2,1 días en promedio</td></tr>
+            <tr><td>Fraude sin ningún control</td><td class="r">≈ 28 % del $</td></tr>
+          </table>
+        </div>
+      </div>
+      <p class="muted" style="margin-top:0.7rem;font-size:0.85rem">Los KPIs de negocio se miden en las transacciones de octubre a diciembre, que no se usaron para entrenar. Supuestos: margen de Clip de 1 % y retención de 7 días.</p>
+    </section>
+
+    <section class="slide tight" data-sec="Datos">
+      <p class="kicker">Los datos y el target</p>
+      <h2>Una fila por merchant: el primer día suspendido contra un día activo de los demás.</h2>
+      <div class="pipe sol">
+        <div class="pipe-step"><div class="who">Entrada</div><div class="what">featureset diario</div><div class="why">una fila por merchant y día · abril a diciembre</div></div>
+        <div class="flow-arr">→</div>
+        <div class="pipe-step main"><div class="who">Positivos</div><div class="what">12 merchants</div><div class="why">su primer día suspendido</div></div>
+        <div class="flow-arr">+</div>
+        <div class="pipe-step"><div class="who">Negativos</div><div class="what">33.500 merchants</div><div class="why">nunca suspendidos, un día activo</div></div>
+        <div class="flow-arr">→</div>
+        <div class="pipe-step out"><div class="who">Dataset</div><div class="what">33.512 filas</div><div class="why">prevalencia 0,036 %</div></div>
+      </div>
+      <p class="kicker" style="margin:1rem 0 0.5rem">Las 4 variables del modelo · salen de la foto del merchant</p>
+      <div class="row" style="grid-template-columns:repeat(4,1fr)">
+        <div class="card"><p class="kicker" style="margin-bottom:0.3rem">aprobacion_7d</p><p>La menor entre la tasa de aprobación a 7 y a 30 días. Si no hay actividad reciente, la histórica.</p><p class="muted" style="font-size:0.8rem">me_txn_approval_rate_7d · _30d</p></div>
+        <div class="card"><p class="kicker" style="margin-bottom:0.3rem">aprobacion_historica</p><p>Tasa de aprobación de toda la vida del merchant.</p><p class="muted" style="font-size:0.8rem">me_lifetime_txn_approval_rate</p></div>
+        <div class="card"><p class="kicker" style="margin-bottom:0.3rem">sin_actividad_7d</p><p>Marca 1 si no hubo intentos en los últimos 7 días.</p><p class="muted" style="font-size:0.8rem">me_txn_approval_rate_7d nula</p></div>
+        <div class="card"><p class="kicker" style="margin-bottom:0.3rem">log_max_rechazos_30d</p><p>Logaritmo del peor día de rechazos (intentos menos aprobadas) en los 30 días hasta la foto.</p><p class="muted" style="font-size:0.8rem">me_attempted_txn_sum_1d · me_approved_txn_sum_1d</p></div>
+      </div>
+    </section>
+
+    <section class="slide" data-sec="Las suspensiones">
+      <p class="kicker">De dónde sale el target · las 19 suspensiones con inicio observado</p>
+      <h2>Día por día: 12 muestran rechazos antes de la suspensión y 6 no muestran nada.</h2>
+      <div class="row" style="grid-template-columns:1.5fr 0.8fr;align-items:start">
+        <div class="chart-block" style="padding:0.5rem">
+          <img src="../docs/suspensiones.png" alt="Transacciones diarias de los 19 merchants con inicio de suspensión" style="width:100%;height:auto;max-height:68vh;object-fit:contain;border-radius:8px;background:#fff" />
+          <p class="legend" style="margin-top:0.4rem">Intentos y aprobadas por día, respecto del inicio · gris = suspendido, naranja claro = estado nulo. Cada barra resume la actividad del día anterior.</p>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:0.7rem">
+          <div class="card"><p class="kicker" style="margin-bottom:0.3rem">12 · positivos</p><p>Los rechazos crecen hacia el inicio y llegan al máximo justo antes (M46B66AE, MA52FE20, M2971A5D). Son los casos que el modelo puede aprender.</p></div>
+          <div class="card"><p class="kicker" style="margin-bottom:0.3rem">6 · sin actividad sospechosa</p><p>Operan normal o casi no operan hasta la suspensión (por ejemplo M315DBFD, M3182C56, MEA1EE5C). Probable suspensión por documentación o cumplimiento: no hay nada que ver en la actividad, por eso quedan fuera.</p></div>
+          <div class="card"><p class="kicker" style="margin-bottom:0.3rem">1 · historia incompleta</p><p>M002D3A13 empieza el primer día de datos: no se sabe cómo llegó.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-sec="Decisiones del target">
+      <p class="kicker">Decisiones del target · en qué se basan</p>
+      <h2>Dos decisiones, cada una con su evidencia.</h2>
+      <div class="cols2">
+        <div class="dcard">
+          <p class="kicker">1 · ¿Qué fila es el positivo?</p>
+          <h3>La del primer día suspendido: es donde está la actividad previa.</h3>
+          <svg class="plot" data-chart='{"yMax":60,"ticks":[0,30,60],"unit":"","x":["−4","−3","−2","−1","0","+1","+2","+3"],"series":[{"name":"intentos","color":"#8fb7d6","y":[7.9,13.1,26.2,42.0,50.1,4.0,12.1,7.0]},{"name":"rechazos","color":"#e07a3d","y":[4.0,9.1,15.3,32.0,35.9,4.0,8.1,3.0]}]}'></svg>
+          <p class="legend inl"><i style="background:#8fb7d6"></i>intentos <i style="background:#e07a3d"></i>rechazos · suma de los 12 positivos, por fila relativa al primer día suspendido</p>
+          <p>Los rechazos suben fila a fila y llegan al máximo en la fila 0, que resume hasta el día anterior. Después de la suspensión, el merchant casi no opera.</p>
+        </div>
+        <div class="dcard">
+          <p class="kicker">2 · ¿Cómo se eligen los negativos?</p>
+          <h3>Un día activo por merchant, con la misma mezcla de fechas que los positivos.</h3>
+          <svg class="plot" data-chart='{"yMax":40,"ticks":[0,20,40],"x":["abr","may","jun","jul","ago"],"series":[{"name":"positivos","color":"#e07a3d","y":[25.0,8.3,8.3,25.0,33.3]},{"name":"negativos","color":"#8fb7d6","y":[21.9,7.6,7.7,25.4,37.5]}]}'></svg>
+          <p class="legend inl"><i style="background:#e07a3d"></i>positivos <i style="background:#8fb7d6"></i>negativos · % de las filas por mes de la foto</p>
+          <p>Si los negativos salieran de cualquier fecha, el modelo podría aprender el calendario en vez del comportamiento. Con el sorteo ponderado, las dos curvas coinciden.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-sec="Qué se ve antes">
+      <p class="kicker">Qué se ve antes de una suspensión · las variables del modelo</p>
+      <h2>Los 12 se parecen entre sí y no se parecen a los demás.</h2>
+      <div class="cols2">
+        <div class="dcard">
+          <p class="kicker">Variable 1 · aprobación reciente</p>
+          <h3>Aprueban un cuarto de lo que aprueba el resto.</h3>
+          <div class="hbars">
+            <div class="hbar"><span>positivos</span><div class="track"><div class="fill" style="width:30%"></div></div><span class="n">26 %</span></div>
+            <div class="hbar"><span>resto</span><div class="track"><div class="fill" style="width:100%;background:var(--navy)"></div></div><span class="n">87 %</span></div>
+          </div>
+          <p class="muted">La peor entre la tasa a 7 y a 30 días. Sin actividad reciente, se usa la histórica.</p>
+        </div>
+        <div class="dcard">
+          <p class="kicker">Variable 2 · aprobación histórica</p>
+          <h3>También venían peor de antes, pero la caída reciente es más fuerte.</h3>
+          <div class="hbars">
+            <div class="hbar"><span>positivos</span><div class="track"><div class="fill" style="width:67%"></div></div><span class="n">58 %</span></div>
+            <div class="hbar"><span>resto</span><div class="track"><div class="fill" style="width:100%;background:var(--navy)"></div></div><span class="n">86 %</span></div>
+          </div>
+          <p class="muted">Tasa de aprobación de toda la vida del merchant.</p>
+        </div>
+        <div class="dcard">
+          <p class="kicker">Variable 3 · peor día de rechazos en 30 días</p>
+          <h3>Un día con muchos rechazos: la mediana de los positivos es 6,5; la del resto, 0.</h3>
+          <div class="hbars">
+            <div class="hbar"><span>positivos</span><div class="track"><div class="fill" style="width:100%"></div></div><span class="n">6,4</span></div>
+            <div class="hbar"><span>resto</span><div class="track"><div class="fill" style="width:17%;background:var(--navy)"></div></div><span class="n">1,1</span></div>
+          </div>
+          <p class="muted">Media de rechazos del peor día. Entra en logaritmo.</p>
+        </div>
+        <div class="dcard">
+          <p class="kicker">Variable 4 · sin actividad a 7 días</p>
+          <h3>Ninguno de los 12 estaba inactivo; casi la mitad del resto sí.</h3>
+          <div class="hbars">
+            <div class="hbar"><span>positivos</span><div class="track"><div class="fill" style="width:2%"></div></div><span class="n">0 %</span></div>
+            <div class="hbar"><span>resto</span><div class="track"><div class="fill" style="width:100%;background:var(--navy)"></div></div><span class="n">46 %</span></div>
+          </div>
+          <p class="muted">Un merchant que no opera no puede mostrar el patrón: la marca ayuda al modelo a no confundirlo con uno sano.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide tight" data-sec="Modelo">
+      <p class="kicker">El modelo · en qué se basa la elección</p>
+      <h2>Una regresión logística de cuatro variables captura más que la regla y que el modelo con más variables.</h2>
+      <div class="row" style="grid-template-columns:1.25fr 0.95fr">
+        <div class="chart-block">
+          <h3>Suspensiones capturadas en el 5 % de mayor score (de 12)</h3>
+          <div class="hbars" style="gap:0.85rem;margin:0.5rem 0">
+            <div class="hbar"><span>azar</span><div class="track"><div class="fill" style="width:5.7%;background:var(--muted)"></div></div><span class="n">0,6</span></div>
+            <div class="hbar"><span>regla</span><div class="track"><div class="fill" style="width:75.5%;background:var(--navy)"></div></div><span class="n">8,0</span></div>
+            <div class="hbar"><span>logística A</span><div class="track"><div class="fill" style="width:78.3%;background:var(--navy)"></div></div><span class="n">8,3</span></div>
+            <div class="hbar"><span>logística B</span><div class="track"><div class="fill" style="width:100%"></div></div><span class="n">10,6</span></div>
+            <div class="hbar"><span>logística C</span><div class="track"><div class="fill" style="width:93.4%;background:var(--navy)"></div></div><span class="n">9,9</span></div>
+          </div>
+          <p class="legend">Cada merchant se predice con un modelo que no lo vio · 5 folds × 10 semillas · empates repartidos al azar</p>
+        </div>
+        <table>
+          <thead><tr><th>Modelo</th><th class="r">Variables</th><th class="r">PR-AUC</th></tr></thead>
+          <tbody>
+            <tr><td>Regla</td><td class="r">sin entrenar</td><td class="r">0,0083</td></tr>
+            <tr><td>A</td><td class="r">1</td><td class="r">0,0060</td></tr>
+            <tr><td><strong>B</strong></td><td class="r"><strong>4</strong></td><td class="r"><strong>0,0216</strong></td></tr>
+            <tr><td>C</td><td class="r">6</td><td class="r">0,0234</td></tr>
+            <tr><td>Prevalencia</td><td class="r"></td><td class="r">0,0004</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="row eq" style="margin-top:0.9rem">
+        <div class="card"><p class="kicker" style="margin-bottom:0.3rem">Por qué B y no C</p><p>C suma ticket e intentos y no captura más: 9,9 contra 10,6. Se queda el modelo más simple.</p></div>
+        <div class="card"><p class="kicker" style="margin-bottom:0.3rem">Cómo se entrena</p><p>Regularización L2 fuerte (C = 0,1), pesos de clase balanceados, imputación por mediana y variables estandarizadas. El score no está calibrado: por eso los cortes son por percentil.</p></div>
+      </div>
+    </section>
+
+    <section class="slide tight" data-sec="Score y join">
+      <p class="kicker">Score y join · en qué se basa el uso del score</p>
+      <h2>Ordena a los merchants: el 5 % más riesgoso concentra el 36 % del fraude con el 14 % de las transacciones.</h2>
+      <div class="row" style="grid-template-columns:1.35fr 0.65fr">
+        <div class="chart-block">
+          <h3>De cada 100 transacciones, cuántas son de cada tramo y cuánto del fraude traen</h3>
+          <svg class="plot" data-chart='{"type":"gbars","yMax":60,"ticks":[0,20,40,60],"unit":" %","groups":["0–50 %","50–90 %","90–95 %","95–99 %","99–100 %"],"series":[{"name":"transacciones","color":"#8fb7d6","y":[6.1,55.5,24.4,11.7,2.4]},{"name":"fraude","color":"#e07a3d","y":[13.4,37.5,13.3,29.5,6.3]}]}'></svg>
+          <p class="legend inl"><i style="background:#8fb7d6"></i>% de las transacciones <i style="background:#e07a3d"></i>% del fraude · tramos del percentil de riesgo del merchant</p>
+          <p class="muted" style="font-size:0.85rem;margin:0.3rem 0 0">Donde la barra naranja supera a la azul, el tramo trae más fraude que su peso: 95–99 % (29,5 contra 11,7) y 99–100 % (6,3 contra 2,4).</p>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:0.7rem">
+          <div class="card"><div class="num">100 %<span>de 7.079.949 transacciones con score · 40.265 merchants</span></div></div>
+          <div class="card"><div class="num">931 de 2.600<span>fraudes en el 5 % más riesgoso (2.014 merchants)</span></div></div>
+        </div>
+      </div>
+      <div class="row eq" style="margin-top:0.9rem">
+        <div class="card"><p class="kicker" style="margin-bottom:0.3rem">Qué dice y qué no</p><p>Ordena bien por merchant (AUC 0,76) y casi nada por transacción (0,57). El score se entrena con suspensión, no con fraude. El tramo 0–50 % tiene una tasa de fraude alta (0,08 %): son merchants chicos que el score no ve.</p></div>
+        <div class="card"><p class="kicker" style="margin-bottom:0.3rem">Por qué cortes por percentil</p><p>La probabilidad no está calibrada: con 0,036 % de prevalencia y clases pesadas, 0,5 no significa nada. El percentil de riesgo es estable y se puede explicar a negocio.</p></div>
+      </div>
+    </section>
+
+    <section class="slide" data-sec="Pre-autorización">
+      <p class="kicker">Reglas de pre-autorización · en qué se basan los cortes</p>
+      <h2>Se rechaza solo donde el fraude evitado supera lo que se pierde en margen.</h2>
+      <div class="row" style="grid-template-columns:1.5fr 1fr">
+        <div class="chart-block">
+          <h3>Equilibrio por volumen del merchant y corte de riesgo · conviene si supera el margen (1 %)</h3>
+          <svg class="plot" data-chart='{"type":"gbars","yMax":2.5,"ticks":[0,1,2],"unit":" %","mark":1,"markLabel":"margen 1 %","groups":["baja","media","alta"],"series":[{"name":"≥ 90 %","color":"#8fb7d6","y":[1.56,0.68,0.24]},{"name":"≥ 95 %","color":"#c5d4a8","y":[1.75,0.64,0.42]},{"name":"≥ 99 %","color":"#e07a3d","y":[0.91,2.34,0.09]}]}'></svg>
+          <p class="legend inl"><i style="background:#8fb7d6"></i>riesgo ≥ 90 % <i style="background:#c5d4a8"></i>≥ 95 % <i style="background:#e07a3d"></i>≥ 99 % · volumen: baja 1–9, media 10–99, alta ≥ 100 intentos en 30 días</p>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:0.7rem">
+          <div class="card">
+            <p class="kicker" style="margin-bottom:0.3rem">La regla</p>
+            <p><strong>Volumen bajo</strong> con riesgo ≥ 90 %: beneficio neto $0,24 M, el mayor de ese nivel.</p>
+            <p><strong>Volumen medio</strong> con riesgo ≥ 99 %: equilibrio 2,3 %, beneficio $0,14 M.</p>
+            <p><strong>Volumen alto</strong>: nunca rechazar. A 90 % se pierde el 24,9 % del TPV bueno.</p>
+          </div>
+          <div class="card">
+            <p class="kicker" style="margin-bottom:0.3rem">Se sostiene en las dos mitades</p>
+            <table>
+              <tr><td>Mitad A</td><td class="r">1,35 %</td></tr>
+              <tr><td>Mitad B</td><td class="r">2,20 %</td></tr>
+              <tr><td>Sin el merchant de 256 fraudes</td><td class="r">1,71 %</td></tr>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="kpis" style="margin-top:0.9rem">
+        <div class="card"><div class="num">1.477<span>merchants rechazados · 19.193 transacciones</span></div></div>
+        <div class="card"><div class="num">12,3 %<span>del $ de fraude evitado</span></div></div>
+        <div class="card"><div class="num">1,78 %<span>del TPV bueno rechazado</span></div></div>
+        <div class="card"><div class="num">93,17 %<span>aprobación final</span></div></div>
+      </div>
+    </section>
+
+    <section class="slide" data-sec="Post-autorización">
+      <p class="kicker">Reglas de post-autorización · en qué se basa cada retención</p>
+      <h2>Se retiene el pago donde el fraude está más concentrado que el TPV.</h2>
+      <div class="row" style="grid-template-columns:1.5fr 1fr">
+        <div class="chart-block">
+          <h3>Por regla · % del TPV retenido y % del $ de fraude que cubre</h3>
+          <div class="hbars" style="gap:0.7rem;margin:0.5rem 0">
+            <div><div class="hbar" style="grid-template-columns:9.5rem 1fr 3.4rem"><span>revisión manual</span><div class="track"><div class="fill" style="width:36%;background:var(--navy)"></div></div><span class="n">12,5 %</span></div><div class="hbar" style="grid-template-columns:9.5rem 1fr 3.4rem"><span></span><div class="track"><div class="fill" style="width:34%"></div></div><span class="n">23,6 %</span></div></div>
+            <div><div class="hbar" style="grid-template-columns:9.5rem 1fr 3.4rem"><span>retención automática</span><div class="track"><div class="fill" style="width:17%;background:var(--navy)"></div></div><span class="n">5,8 %</span></div><div class="hbar" style="grid-template-columns:9.5rem 1fr 3.4rem"><span></span><div class="track"><div class="fill" style="width:14%"></div></div><span class="n">9,7 %</span></div></div>
+            <div><div class="hbar" style="grid-template-columns:9.5rem 1fr 3.4rem"><span>CNP ≥ $500</span><div class="track"><div class="fill" style="width:23%;background:var(--navy)"></div></div><span class="n">8,0 %</span></div><div class="hbar" style="grid-template-columns:9.5rem 1fr 3.4rem"><span></span><div class="track"><div class="fill" style="width:35%"></div></div><span class="n">23,7 %</span></div></div>
+            <div><div class="hbar" style="grid-template-columns:9.5rem 1fr 3.4rem"><span>monto ≥ $20.000</span><div class="track"><div class="fill" style="width:34%;background:var(--navy)"></div></div><span class="n">11,8 %</span></div><div class="hbar" style="grid-template-columns:9.5rem 1fr 3.4rem"><span></span><div class="track"><div class="fill" style="width:50%"></div></div><span class="n">34,0 %</span></div></div>
+            <div><div class="hbar" style="grid-template-columns:9.5rem 1fr 3.4rem"><span><strong>las cuatro juntas</strong></span><div class="track"><div class="fill" style="width:89%;background:var(--navy)"></div></div><span class="n">30,6 %</span></div><div class="hbar" style="grid-template-columns:9.5rem 1fr 3.4rem"><span></span><div class="track"><div class="fill" style="width:100%"></div></div><span class="n">68,6 %</span></div></div>
+          </div>
+          <p class="legend inl"><i style="background:#8fb7d6"></i>% del TPV retenido <i style="background:#e07a3d"></i>% del $ de fraude cubierto · la última fila no suma las anteriores: hay merchants en más de una</p>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:0.7rem">
+          <div class="card">
+            <p class="kicker" style="margin-bottom:0.3rem">Por qué cada una</p>
+            <p><strong>Revisión manual</strong> en volumen alto con riesgo ≥ 95 %: 244 merchants, donde rechazar costaría demasiado TPV.</p>
+            <p><strong>CNP y monto alto</strong>: el 91 % de los merchants con CNP no está en el 5 % más riesgoso. Es fraude que el score no ve.</p>
+          </div>
+          <div class="card">
+            <p class="kicker" style="margin-bottom:0.3rem">Costo</p>
+            <p>Los pagos buenos se demoran <strong>2,1 días</strong> en promedio. Quedan sin control ≈ 28 % del $ de fraude, contra 58,5 % sin las reglas nuevas.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide tight" data-sec="Emisores">
+      <p class="kicker">Bonus · paquetes de transacciones para los emisores</p>
+      <h2>Tres paquetes: la tasa de fraude sube 5,7 veces del bajo al alto.</h2>
+      <div class="row" style="grid-template-columns:1.2fr 0.8fr">
+        <div class="chart-block">
+          <h3>Tasa de fraude por paquete · % de las transacciones aprobadas</h3>
+          <div class="hbars" style="gap:1rem;margin:0.6rem 0">
+            <div class="hbar" style="grid-template-columns:5rem 1fr 4.2rem"><span>bajo</span><div class="track"><div class="fill" style="width:17.5%;background:var(--ok)"></div></div><span class="n">0,026 %</span></div>
+            <div class="hbar" style="grid-template-columns:5rem 1fr 4.2rem"><span>medio</span><div class="track"><div class="fill" style="width:61.7%;background:var(--navy)"></div></div><span class="n">0,090 %</span></div>
+            <div class="hbar" style="grid-template-columns:5rem 1fr 4.2rem"><span>alto</span><div class="track"><div class="fill" style="width:100%"></div></div><span class="n">0,146 %</span></div>
+          </div>
+          <p class="legend">Los tres usan las reglas ya definidas: no hay un criterio nuevo que defender.</p>
+        </div>
+        <table>
+          <thead><tr><th>Paquete</th><th class="r">% txns</th><th class="r">% TPV</th></tr></thead>
+          <tbody>
+            <tr><td>Bajo</td><td class="r">84,0 %</td><td class="r">77,0 %</td></tr>
+            <tr><td>Medio</td><td class="r">13,6 %</td><td class="r">16,2 %</td></tr>
+            <tr><td>Alto</td><td class="r">2,4 %</td><td class="r">6,8 %</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="row three" style="margin-top:0.9rem">
+        <div class="card"><p class="kicker" style="margin-bottom:0.3rem">Alto</p><p>Merchants de las reglas de rechazo o con riesgo ≥ 99 %.</p></div>
+        <div class="card"><p class="kicker" style="margin-bottom:0.3rem">Medio</p><p>Revisión, retención automática o riesgo entre 95 y 99 %.</p></div>
+        <div class="card"><p class="kicker" style="margin-bottom:0.3rem">Bajo</p><p>El resto. Su tasa de fraude es 31 % menor que la de todo lo aprobado: el emisor recibe un paquete más limpio.</p></div>
+      </div>
+    </section>
+
+    <section class="slide tight" data-sec="Límites">
+      <p class="kicker">Qué no hay que leer de más</p>
+      <h2>Límites y supuestos.</h2>
+      <div class="cols2">
+        <div class="dcard">
+          <h3>Del modelo</h3>
+          <ul>
+            <li><strong>12 positivos:</strong> un caso mueve 8 puntos de recall. Toda métrica es ruidosa.</li>
+            <li><strong>Sin período independiente:</strong> la regla, las variables y los cortes se eligieron mirando los mismos datos.</li>
+            <li><strong>Recall sobre suspensiones visibles:</strong> la empresa evalúa todas las de octubre a diciembre, incluidas las que no dejan rastro en la actividad.</li>
+            <li><strong>Suspensión no es fraude:</strong> el score ordena merchants, no transacciones.</li>
+          </ul>
+        </div>
+        <div class="dcard">
+          <h3>De las reglas</h3>
+          <ul>
+            <li><strong>Margen de Clip de 1 %</strong> y <strong>retención de 7 días</strong>: supuestos, no están en los datos.</li>
+            <li><strong>Cortes elegidos sobre las mismas transacciones</strong> con las que se miden: la mejora real será algo menor.</li>
+            <li><strong>Fraude concentrado:</strong> en CNP, 138 merchants y los 10 primeros suman el 58 % del $. Sacar uno cambia los números.</li>
+            <li><strong>≈ 523 merchants</strong> se puntúan con una fila anterior al 1 de octubre.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide tight" data-sec="IA">
+      <p class="kicker">Transparencia</p>
+      <h2>Cómo se usó la IA.</h2>
+      <div class="cols2">
+        <div class="dcard">
+          <h3>Qué hizo Claude Code</h3>
+          <ul>
+            <li>Escribir y ejecutar los notebooks del pipeline: dataset, variables, modelo, score, reglas.</li>
+            <li>Proponer alternativas y cuantificarlas con los datos.</li>
+            <li>Redactar el registro de decisiones y esta presentación.</li>
+          </ul>
+        </div>
+        <div class="dcard">
+          <h3>Qué se decidió y se revisó a mano</h3>
+          <ul>
+            <li>El target, el día de la foto, qué casos quedan fuera y por qué.</li>
+            <li>La lectura de cada resultado, incluidos los errores que aparecieron en el camino y se corrigieron.</li>
+            <li>Los supuestos de negocio y los límites que se declaran.</li>
+          </ul>
+        </div>
+      </div>
+      <p class="sub" style="margin-top:0.8rem">Todas las decisiones, con sus pruebas, están en <em>docs/decisions.md</em>.</p>
+    </section>
+
+    <section class="slide" data-sec="Gracias" style="justify-content:center;align-items:center;text-align:center">
+      <p class="kicker">Clip · Data Science Challenge 2026</p>
+      <h1>Muchas gracias.</h1>
+    </section>
+
+  </main>
+
+  <div class="bar">
+    <span id="sec">Inicio</span>
+    <div class="dots" id="dots"></div>
+    <div class="nav">
+      <span id="pos">1 / 1</span>
+      <button type="button" id="prev">←</button>
+      <button type="button" id="next">→</button>
+    </div>
+  </div>
+
+  <script>
+    const slides = [...document.querySelectorAll(".slide")];
+    const dots = document.getElementById("dots");
+    const pos = document.getElementById("pos");
+    const sec = document.getElementById("sec");
+    let i = 0;
+    slides.forEach((_, k) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.addEventListener("click", () => go(k));
+      dots.appendChild(b);
+    });
+    function go(n) {
+      i = Math.max(0, Math.min(slides.length - 1, n));
+      slides.forEach((s, k) => s.classList.toggle("on", k === i));
+      [...dots.children].forEach((d, k) => d.classList.toggle("on", k === i));
+      pos.textContent = `${i + 1} / ${slides.length}`;
+      sec.textContent = slides[i].dataset.sec || "";
+      history.replaceState(null, "", `#${i + 1}`);
+      fit();
+    }
+    function fit() {
+      const s = slides[i], H = document.getElementById("deck").clientHeight;
+      const ok = (z) => { s.style.zoom = z; s.style.height = (H / z) + "px"; return s.scrollHeight <= s.clientHeight + 1; };
+      let lo = 0.55, hi = 1.9;
+      if (ok(hi)) { s.style.zoom = hi; return; }
+      for (let k = 0; k < 9; k++) { const m = (lo + hi) / 2; if (ok(m)) lo = m; else hi = m; }
+      ok(lo);
+      while (s.scrollHeight > s.clientHeight + 1 && lo > 0.55) { lo = Math.max(0.55, lo - 0.02); ok(lo); }
+    }
+    window.addEventListener("resize", fit);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => requestAnimationFrame(() => requestAnimationFrame(fit)));
+    document.getElementById("prev").onclick = () => go(i - 1);
+    document.getElementById("next").onclick = () => go(i + 1);
+    document.addEventListener("keydown", (e) => {
+      if (["ArrowRight", "PageDown", " ", "Enter"].includes(e.key)) { e.preventDefault(); go(i + 1); }
+      if (["ArrowLeft", "PageUp", "Backspace"].includes(e.key)) { e.preventDefault(); go(i - 1); }
+      if (e.key === "Home") go(0);
+      if (e.key === "End") go(slides.length - 1);
+    });
+    const start = parseInt(location.hash.slice(1), 10);
+    (function drawCharts() {
+      const ns = "http://www.w3.org/2000/svg";
+      document.querySelectorAll("svg.plot[data-chart]").forEach((svg) => {
+        const spec = JSON.parse(svg.getAttribute("data-chart"));
+        const w = 440, h = 250, L = 42, R = 14, T = 16, B = 32;
+        const iw = w - L - R, ih = h - T - B;
+        const unit = spec.unit == null ? "%" : spec.unit;
+        svg.setAttribute("viewBox", `0 0 ${w} ${h}`);
+        svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
+        const el = (name, attrs, text) => {
+          const n = document.createElementNS(ns, name);
+          Object.entries(attrs).forEach(([k, v]) => n.setAttribute(k, String(v)));
+          if (text != null) n.textContent = text;
+          svg.appendChild(n);
+          return n;
+        };
+        const txt = (x, y, t, extra) => el("text", Object.assign({ x, y, fill: "#a79e91", "font-size": 11, "font-family": "Outfit, sans-serif" }, extra), t);
+        const yMax = spec.yMax;
+        const yAt = (v) => T + ih - (v / yMax) * ih;
+        (spec.ticks || [0, yMax / 2, yMax]).forEach((g) => {
+          el("line", { x1: L, x2: L + iw, y1: yAt(g), y2: yAt(g), stroke: "#2c2722", "stroke-width": 1 });
+          txt(L - 8, yAt(g) + 4, `${String(g).replace(".", ",")}${unit}`, { "text-anchor": "end" });
+        });
+        if (spec.type === "gbars") {
+          const ng = spec.groups.length, ns_ = spec.series.length;
+          const gw = iw / ng, bw = Math.min(30, (gw * 0.7) / ns_);
+          spec.groups.forEach((g, gi) => {
+            const cx = L + gw * (gi + 0.5);
+            txt(cx, h - 8, g, { "text-anchor": "middle" });
+            spec.series.forEach((s, si) => {
+              const x = cx - (ns_ * bw) / 2 + si * bw;
+              const v = s.y[gi], y = yAt(v);
+              el("rect", { x: x + 1, y, width: bw - 2, height: yAt(0) - y, rx: 2, fill: s.color });
+              txt(x + bw / 2, y - 4, String(v).replace(".", ","), { "text-anchor": "middle", fill: "#f4efe6", "font-size": 9.5 });
+            });
+          });
+          if (spec.mark != null) {
+            el("line", { x1: L, x2: L + iw, y1: yAt(spec.mark), y2: yAt(spec.mark), stroke: "#e07a3d", "stroke-width": 1.6, "stroke-dasharray": "5 4" });
+            txt(L + iw, yAt(spec.mark) - 5, spec.markLabel || "", { "text-anchor": "end", fill: "#e07a3d" });
+          }
+          return;
+        }
+        const xs = spec.x;
+        const n = xs.length;
+        const xAt = (k) => L + (n === 1 ? iw / 2 : (k / (n - 1)) * iw);
+        xs.forEach((lab, k) => txt(xAt(k), h - 8, lab, { "text-anchor": "middle" }));
+        (spec.series || []).forEach((s) => {
+          const pts = [];
+          s.y.forEach((v, k) => { if (v != null) pts.push([xAt(k), yAt(v)]); });
+          if (pts.length > 1) {
+            el("polyline", { fill: "none", stroke: s.color, "stroke-width": 2.2, "stroke-linejoin": "round", "stroke-linecap": "round", points: pts.map((p) => p.join(",")).join(" ") });
+          }
+          pts.forEach(([x, y]) => el("circle", { cx: x, cy: y, r: 4.2, fill: s.color }));
+        });
+      });
+    })();
+    go(Number.isFinite(start) ? start - 1 : 0);
+  </script>
+</body>
+</html>
