@@ -1,75 +1,75 @@
 # Merchant Risk Scoring · Clip DS Challenge 2026
 
-Un score de riesgo por merchant para decidir qué transacciones se aprueban y a qué merchants se les paga de inmediato.
+A merchant risk score to decide which transactions are approved and which merchants are paid immediately.
 
-Todas las decisiones, con sus pruebas y límites, están en [`docs/decisions.md`](docs/decisions.md).
+Every decision, with its evidence and limits, is in [`docs/decisions.md`](docs/decisions.md).
 
-## El problema
+## The problem
 
-Clip agrupa merchants en afiliaciones que los emisores evalúan en conjunto: unos pocos merchants riesgosos bajan la aprobación de todos. El challenge pide (1) entrenar un modelo, (2) puntuar a cada merchant y unir el score a las transacciones, y (3) proponer reglas de pre y post autorización, midiendo por separado la calidad del modelo y el impacto de negocio.
+Clip groups merchants into affiliations that issuers evaluate together: a few risky merchants lower approval for everyone. The challenge asks to (1) train a model, (2) score each merchant and join the score onto the transactions, and (3) propose pre- and post-authorization rules, measuring model quality and business impact separately.
 
-## Cómo se resolvió
+## How it was solved
 
-**Target.** `is_suspended` es un estado diario, no un evento. Cada merchant con inicio de suspensión observado aporta **una fila positiva: su primer día suspendido**. Esa fila resume la actividad hasta el día anterior (confirmado por la empresa), así que no usa información posterior. Los negativos son merchants nunca suspendidos en abril–septiembre, un día activo sorteado con la misma mezcla de fechas que los positivos. Quedan 12 positivos y unos 33.500 negativos. Se excluyen los suspendidos que no muestran actividad sospechosa antes del inicio (probable suspensión por documentación o cumplimiento): el recall reportado es sobre las suspensiones visibles en la actividad.
+**Target.** `is_suspended` is a daily state, not an event. Each merchant with an observed suspension start contributes **one positive row: their first suspended day**. That row summarizes activity through the previous day (confirmed by the company), so it does not use information from after the suspension. Negatives are merchants never suspended in April–September, one active day drawn with the same date mix as the positives. That leaves 12 positives and about 33,500 negatives. Suspended merchants who show no suspicious activity before the start are excluded (likely a documentation or compliance suspension): the reported recall is over suspensions that are visible in the activity.
 
-**Modelo.** Regresión logística con regularización L2, 4 variables de la foto del merchant: aprobación reciente (la peor entre 7 y 30 días), aprobación histórica, indicador de "sin actividad a 7 días" y el peor día de rechazos en 30 días. Validación por merchant: 5 folds estratificados repetidos con 10 semillas. KPIs del modelo: PR-AUC y positivos capturados en el 5% de mayor score (10,6 de 12).
+**Model.** L2-regularized logistic regression, 4 variables from the merchant snapshot: recent approval (the worse of 7 and 30 days), lifetime approval, a "no activity in 7 days" flag, and the worst day of declines in 30 days. Validation is by merchant: 5 stratified folds repeated with 10 seeds. Model KPIs: PR-AUC and positives captured in the top 5% of the score (10.6 of 12).
 
-**Score y join.** Cada merchant se puntúa con su fila del 1 de octubre y el score se une por `merchant_id` a las 7,08 millones de transacciones de octubre a diciembre (cobertura 100%). Las transacciones no se usaron para entrenar: son el conjunto independiente para medir el impacto.
+**Score and join.** Each merchant is scored on their October 1 row and the score is joined by `merchant_id` onto the 7.08 million October–December transactions (100% coverage). Those transactions were not used for training: they are the held-out set for measuring impact.
 
-**Reglas.** Los cortes se definen por percentil de score (la probabilidad no está calibrada) y se combinan con el volumen del merchant:
-- *Pre-autorización:* rechazar volumen bajo con riesgo ≥ 90% y volumen medio con riesgo ≥ 99%.
-- *Post-autorización:* revisión manual para volumen alto con riesgo ≥ 95%, retención de 7 días para merchants sin actividad, y retener la transacción si es CNP de $500 o más, o de $20.000 o más de cualquier tipo.
-- *Bonus:* tres paquetes sobre lo aprobado (bajo, medio, alto). El principal es el bajo.
+**Rules.** Cuts are score percentiles (the probability is not calibrated) and are combined with the merchant's volume:
+- *Pre-authorization:* decline low volume with risk ≥ 90% and medium volume with risk ≥ 99%.
+- *Post-authorization:* manual review for high volume with risk ≥ 95%, a 7-day hold for merchants with no activity, and hold the transaction if it is CNP of $500 or more, or $20,000 or more of any type.
+- *Bonus:* three packages over approved transactions (low, medium, high). The main one is low.
 
-Con los supuestos de margen de Clip de 1% y retención de 7 días, el rechazo evita el 12,3% del $ de fraude con 1,78% del TPV bueno rechazado. Rechazo más la retención del score cubre el 41,5%. Con las reglas de CNP y de monto, lo evitado o retenido llega a cerca del 72% y lo que pasa sin control baja a cerca del 28%. Detalle, trade-offs y chequeos en la sección 5 de `decisions.md`.
+With an assumed Clip margin of 1% and a 7-day hold, the decline avoids 12.3% of fraud dollars while declining 1.78% of good TPV. The decline plus the score hold covers 41.5%. With the CNP and amount rules, what is avoided or held reaches about 72%, and what passes with no control falls to about 28%. Detail, trade-offs, and checks are in section 5 of `decisions.md`.
 
-## Limitaciones
+## Limitations
 
-- Con 12 positivos, cualquier métrica es ruidosa; un caso mueve 8 puntos de recall.
-- La regla, las variables y los cortes se eligieron mirando los mismos datos. No hay un período independiente adicional.
-- El score se entrena con suspensión, no con fraude: ordena bien el 5% más riesgoso y casi nada dentro del resto (el 5% más riesgoso concentra el 36% del fraude).
-- El margen de Clip y la retención de 7 días son supuestos que no están en los datos.
+- With 12 positives, any metric is noisy; one case moves recall by 8 points.
+- The rule, the variables, and the cuts were chosen by looking at the same data. There is no further held-out period.
+- The score is trained on suspension, not on fraud: it ranks the riskiest 5% well and almost nothing inside the rest (the riskiest 5% concentrates 36% of fraud).
+- Clip's margin and the 7-day hold are assumptions that are not in the data.
 
-## Cómo reproducir
+## How to reproduce
 
-Requiere [uv](https://docs.astral.sh/uv/) y Python 3.12 o superior.
+Requires [uv](https://docs.astral.sh/uv/) and Python 3.12 or newer.
 
 ```bash
 uv sync
 ```
 
-Los datos que entregó la empresa no se versionan. Hay que dejarlos en `data/`:
+The data provided by the company is not versioned. Place it in `data/`:
 
 ```text
 data/merchant_rating_featureset_sample.parquet
 data/txn_sample.parquet
 ```
 
-Los notebooks se ejecutan en orden y desde la carpeta `notebooks/`, porque resuelven las rutas desde ahí:
+Run the notebooks in order, from the `notebooks/` folder, because they resolve paths from there:
 
 ```bash
 cd notebooks
 uv run --with jupyter jupyter lab
 ```
 
-| Notebook | Qué hace | Salida |
+| Notebook | What it does | Output |
 |---|---|---|
-| `01_EDA` | Exploración de los datos | — |
-| `02_suspensiones` | Cada suspensión día por día | `docs/suspensiones*`, `docs/variables/` |
-| `03_dataset` | Arma el dataset: una fila por merchant | `data/processed/dataset.parquet` |
-| `04_features` | Arma las features | `data/processed/features.parquet` |
-| `05_logistica` | Entrena y compara la regla y la logística; puntúa octubre | `docs/modelo/`, `data/processed/score_octubre.parquet` |
-| `06_transacciones_con_score` | Une el score a las transacciones | `data/processed/transacciones_con_score.parquet` |
-| `07_reglas` | Reglas de pre y post autorización y KPIs de negocio | `docs/reglas/` |
+| `01_EDA` | Explores the data | — |
+| `02_suspensiones` | Each suspension, day by day | `docs/suspensiones*`, `docs/variables/` |
+| `03_dataset` | Builds the dataset: one row per merchant | `data/processed/dataset.parquet` |
+| `04_features` | Builds the features | `data/processed/features.parquet` |
+| `05_logistica` | Trains and compares the rule and the logistic model; scores October | `docs/modelo/`, `data/processed/score_octubre.parquet` |
+| `06_transacciones_con_score` | Joins the score onto the transactions | `data/processed/transacciones_con_score.parquet` |
+| `07_reglas` | Pre- and post-authorization rules and business KPIs | `docs/reglas/` |
 
-`requirements.txt` es una copia exportada de `uv.lock` para quien no use uv: `pip install -r requirements.txt`.
+`requirements.txt` is an export of `uv.lock` for anyone not using uv: `pip install -r requirements.txt`.
 
-## Estructura
+## Layout
 
 ```text
-data/            datos de la empresa y derivados (no se versionan)
-docs/            decisiones, gráficos y tablas de resultados
-guideline/       enunciado del challenge
-notebooks/       el pipeline, en orden
-presentacion/    presentación
+data/            company data and derived files (not versioned)
+docs/            decisions, charts, and result tables
+guideline/       challenge brief
+notebooks/       the pipeline, in order
+presentacion/    the presentation
 ```

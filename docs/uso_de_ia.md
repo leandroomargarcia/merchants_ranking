@@ -1,35 +1,35 @@
-# Uso de IA
+# Use of AI
 
-El análisis lo planteó, lo guió y lo controló Leandro Garcia de principio a fin. Usó Claude Code como asistente de trabajo: él definía qué probar, revisaba cada resultado, pedía correcciones y tomaba la decisión final. La IA escribió el código, ejecutó las pruebas y redactó lo que él le pidió.
+Leandro Garcia framed, guided, and checked the analysis from start to finish. He used Claude Code as a working assistant: he decided what to try, reviewed every result, asked for corrections, and made the final call. The AI wrote the code, ran the tests, and drafted what he asked for.
 
-## Cómo se trabajó
+## How the work was done
 
-En cada etapa el flujo fue el mismo:
+Every stage followed the same loop:
 
-1. Leandro planteaba la pregunta o la hipótesis.
-2. La IA la ejecutaba sobre los datos y devolvía los números.
-3. Leandro revisaba el resultado, lo cuestionaba y pedía cambios o pruebas adicionales.
-4. Leandro decidía, y la decisión quedó registrada con su evidencia en [`decisions.md`](decisions.md).
+1. Leandro stated the question or the hypothesis.
+2. The AI ran it on the data and returned the numbers.
+3. Leandro reviewed the result, challenged it, and asked for changes or extra checks.
+4. Leandro decided, and the decision was recorded with its evidence in [`decisions.md`](decisions.md).
 
-## Por etapa
+## By stage
 
-| Etapa | Cómo la guió y la decidió Leandro | Qué ejecutó la IA |
+| Stage | How Leandro guided and decided it | What the AI ran |
 |---|---|---|
-| Planteo del modelo | Preguntó por alternativas al clasificador y pidió incluir en el roadmap la prueba de un detector de anomalías. Fijó cada versión del target. | Comparó las opciones y construyó los datasets. |
-| Target | Pidió mirar cada suspensión día por día, cuestionó qué fila representaba a cada positivo y decidió qué casos quedaban fuera del análisis. Consultó a la empresa qué día resumía cada fila. | Generó los gráficos por merchant y armó el dataset. |
-| Variables y modelo | Pidió entrenar con distintos diseños, decidió qué variables usaba cada modelo y qué capturaba la regla frente a la logística. Decidió quedarse con el modelo más simple. | Escribió los notebooks, la validación repetida y las métricas. |
-| Score y join | Pidió unir el score a las transacciones y verificar la cobertura. | Implementó la unión y los chequeos. |
-| Reglas | Fijó los supuestos de negocio (margen y retención), eligió los cortes y pidió sumar las reglas de CNP y monto alto. | Calculó los KPIs de cada alternativa. |
-| Documentación y presentación | Definió la estructura, el estilo y que cada decisión mostrara en qué se basa. | Redactó `decisions.md`, el README y el HTML. |
+| Framing the model | Asked for alternatives to a classifier and asked to include an anomaly-detector test in the roadmap. Set each version of the target. | Compared the options and built the datasets. |
+| Target | Asked to look at each suspension day by day, questioned which row stood for each positive, and decided which cases stayed out of the analysis. Asked the company which day each row summarizes. | Produced the per-merchant charts and built the dataset. |
+| Variables and model | Asked to train several designs, decided which variables each model used, and what the rule captured compared with the logistic model. Chose the simpler model. | Wrote the notebooks, the repeated validation, and the metrics. |
+| Score and join | Asked to join the score onto the transactions and to check coverage. | Implemented the join and the checks. |
+| Rules | Set the business assumptions (margin and hold), chose the cuts, and asked to add the CNP and high-amount rules. | Computed the KPIs of each alternative. |
+| Documentation and presentation | Set the structure, the style, and that each decision should show what it rests on. | Drafted `decisions.md`, the README, and the HTML. |
 
-## Control de resultados
+## Checking results
 
-Leandro revisó los resultados y pidió corregirlos cuando algo no cerraba. Entre otros:
+Leandro reviewed the results and asked for a correction whenever something did not hold. Among others:
 
-- Las métricas del modelo se recalcularon después de detectar que el orden de las filas favorecía a los positivos.
-- El criterio de qué fila representa a cada positivo se ajustó tras la respuesta de la empresa sobre el día que resume cada fila.
-- Se unificaron notebooks y se corrigieron inconsistencias de `decisions.md`.
+- Model metrics were recomputed after finding that row order favored the positives.
+- The rule for which row represents each positive was adjusted after the company said which day each row summarizes.
+- Notebooks were consolidated and inconsistencies in `decisions.md` were fixed.
 
-## Qué no se delegó
+## What was not delegated
 
-El criterio de negocio, los supuestos, la elección entre alternativas y la lectura de cada resultado son de Leandro.
+The business judgment, the assumptions, the choice among alternatives, and the reading of each result are Leandro's.

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -455,350 +455,350 @@
 <body>
   <main class="deck" id="deck">
 
-    <section class="slide on" data-sec="Inicio">
+    <section class="slide on" data-sec="Start">
       <p class="kicker">Clip · Data Science Challenge 2026</p>
-      <h1>A qué merchant dejar pasar,<br />a cuál frenar.</h1>
-      <p class="lead" style="margin-top:1.4rem">Un score de riesgo por merchant, unido a 7,08 millones de transacciones, y las reglas de pre y post autorización que salen de él.</p>
+      <h1>Which merchant to let through,<br />which one to stop.</h1>
+      <p class="lead" style="margin-top:1.4rem">A merchant risk score, joined to 7.08 million transactions, and the pre- and post-authorization rules that come from it.</p>
       <p style="margin-top:1.8rem;font-size:1.3rem;font-weight:650">Leandro Garcia</p>
-      <p class="muted" style="margin-top:auto;padding-top:2.4rem">Flechas o clic en los puntos. 14 diapositivas.</p>
+      <p class="muted" style="margin-top:auto;padding-top:2.4rem">Arrow keys or click the dots. 14 slides.</p>
     </section>
 
-    <section class="slide tight" data-sec="Negocio">
-      <p class="kicker">El problema de negocio</p>
+    <section class="slide tight" data-sec="Business">
+      <p class="kicker">The business problem</p>
       <div class="pipe sol">
-        <div class="pipe-step"><div class="who">Merchants</div><div class="what">se agrupan</div><div class="why">Clip los junta en afiliaciones</div></div>
+        <div class="pipe-step"><div class="who">Merchants</div><div class="what">are grouped</div><div class="why">Clip bundles them into affiliations</div></div>
         <div class="flow-arr">→</div>
-        <div class="pipe-step"><div class="who">Emisores</div><div class="what">evalúan en conjunto</div><div class="why">miran la afiliación, no al merchant</div></div>
+        <div class="pipe-step"><div class="who">Issuers</div><div class="what">judge them together</div><div class="why">they see the affiliation, not the merchant</div></div>
         <div class="flow-arr">→</div>
-        <div class="pipe-step main"><div class="who">Efecto</div><div class="what">aprobación baja</div><div class="why">pagan los buenos por los riesgosos</div></div>
+        <div class="pipe-step main"><div class="who">Effect</div><div class="what">approval falls</div><div class="why">the good ones pay for the risky ones</div></div>
       </div>
-      <p class="kicker" style="margin:1.1rem 0 0.5rem">Dónde se puede actuar sobre una transacción</p>
+      <p class="kicker" style="margin:1.1rem 0 0.5rem">Where a transaction can be acted on</p>
       <div class="flow">
-        <div class="flow-step"><div class="who">Transacción</div><div class="what">llega</div><div class="why">con el merchant_id</div></div>
+        <div class="flow-step"><div class="who">Transaction</div><div class="what">arrives</div><div class="why">with the merchant_id</div></div>
         <div class="flow-arr">→</div>
-        <div class="flow-step bad"><div class="who">Pre-autorización</div><div class="what">rechazar</div><div class="why">antes de ir al emisor: no le llega la señal mala</div></div>
+        <div class="flow-step bad"><div class="who">Pre-authorization</div><div class="what">decline</div><div class="why">before it reaches the issuer: the bad signal never arrives</div></div>
         <div class="flow-arr">→</div>
-        <div class="flow-step"><div class="who">Emisor</div><div class="what">aprueba o no</div><div class="why">decide con lo que recibe</div></div>
+        <div class="flow-step"><div class="who">Issuer</div><div class="what">approves or not</div><div class="why">decides on what it receives</div></div>
         <div class="flow-arr">→</div>
-        <div class="flow-step ok"><div class="who">Post-autorización</div><div class="what">revisar o retener</div><div class="why">se aprobó, pero el pago al merchant espera</div></div>
+        <div class="flow-step ok"><div class="who">Post-authorization</div><div class="what">review or hold</div><div class="why">it was approved, but the payout to the merchant waits</div></div>
       </div>
       <div class="row three" style="margin-top:1rem">
-        <div class="card"><p class="kicker" style="margin-bottom:0.3rem">1 · Modelo</p><p>Convertir <em>is_suspended</em> en un target justificado y entrenar.</p></div>
-        <div class="card"><p class="kicker" style="margin-bottom:0.3rem">2 · Score y join</p><p>Puntuar a cada merchant y unirlo a las transacciones por <em>merchant_id</em>.</p></div>
-        <div class="card"><p class="kicker" style="margin-bottom:0.3rem">3 · Reglas</p><p>Pre y post autorización, más paquetes para los emisores. KPIs del modelo y del negocio, por separado.</p></div>
+        <div class="card"><p class="kicker" style="margin-bottom:0.3rem">1 · Model</p><p>Turn <em>is_suspended</em> into a justified target and train.</p></div>
+        <div class="card"><p class="kicker" style="margin-bottom:0.3rem">2 · Score and join</p><p>Score each merchant and join it to the transactions by <em>merchant_id</em>.</p></div>
+        <div class="card"><p class="kicker" style="margin-bottom:0.3rem">3 · Rules</p><p>Pre- and post-authorization, plus packages for issuers. Model KPIs and business KPIs, kept separate.</p></div>
       </div>
     </section>
 
-    <section class="slide tight" data-sec="Resultado">
-      <p class="kicker">El resultado en una lámina</p>
+    <section class="slide tight" data-sec="Result">
+      <p class="kicker">The result on one slide</p>
       <div class="kpis">
-        <div class="card"><div class="num">10,6 de 12<span>suspensiones en el 5 % de mayor score · azar: 0,6</span></div></div>
-        <div class="card"><div class="num">$0,91 M<span>de fraude evitado al rechazar · 12,3 %</span></div></div>
-        <div class="card"><div class="num">$53,2 M<span>de TPV bueno rechazado · 1,78 %</span></div></div>
-        <div class="card"><div class="num">≈ 72 %<span>del $ de fraude evitado o retenido</span></div></div>
+        <div class="card"><div class="num">10.6 of 12<span>suspensions in the top 5% of the score · chance: 0.6</span></div></div>
+        <div class="card"><div class="num">$0.91 M<span>of fraud avoided by declining · 12.3%</span></div></div>
+        <div class="card"><div class="num">$53.2 M<span>of good TPV declined · 1.78%</span></div></div>
+        <div class="card"><div class="num">≈ 72%<span>of fraud dollars avoided or held</span></div></div>
       </div>
       <div class="row eq" style="margin-top:0.9rem">
         <div class="card">
-          <p class="kicker" style="margin-bottom:0.4rem">KPIs del modelo</p>
+          <p class="kicker" style="margin-bottom:0.4rem">Model KPIs</p>
           <table>
-            <tr><td>Suspensiones en el top 5 %</td><td class="r">10,6 de 12</td></tr>
-            <tr><td>PR-AUC</td><td class="r">0,0216 · 60× la prevalencia</td></tr>
-            <tr><td>Validación</td><td class="r">por merchant, 5 folds × 10 semillas</td></tr>
+            <tr><td>Suspensions in the top 5%</td><td class="r">10.6 of 12</td></tr>
+            <tr><td>PR-AUC</td><td class="r">0.0216 · 60× the prevalence</td></tr>
+            <tr><td>Validation</td><td class="r">by merchant, 5 folds × 10 seeds</td></tr>
           </table>
         </div>
         <div class="card">
-          <p class="kicker" style="margin-bottom:0.4rem">KPIs del negocio</p>
+          <p class="kicker" style="margin-bottom:0.4rem">Business KPIs</p>
           <table>
-            <tr><td>Aprobación final</td><td class="r">93,17 %</td></tr>
-            <tr><td>TPV demorado por retención</td><td class="r">30,6 % · 2,1 días en promedio</td></tr>
-            <tr><td>Fraude sin ningún control</td><td class="r">≈ 28 % del $</td></tr>
+            <tr><td>Final approval</td><td class="r">93.17%</td></tr>
+            <tr><td>TPV delayed by the hold</td><td class="r">30.6% · 2.1 days on average</td></tr>
+            <tr><td>Fraud under no control</td><td class="r">≈ 28% of $</td></tr>
           </table>
         </div>
       </div>
-      <p class="muted" style="margin-top:0.7rem;font-size:0.85rem">Los KPIs de negocio se miden en las transacciones de octubre a diciembre, que no se usaron para entrenar. Supuestos: margen de Clip de 1 % y retención de 7 días.</p>
+      <p class="muted" style="margin-top:0.7rem;font-size:0.85rem">Business KPIs are measured on the October–December transactions, which were not used for training. Assumptions: a Clip margin of 1% and a 7-day hold.</p>
     </section>
 
-    <section class="slide tight" data-sec="Datos">
-      <p class="kicker">Los datos y el target</p>
+    <section class="slide tight" data-sec="Data">
+      <p class="kicker">The data and the target</p>
       <div class="pipe sol">
-        <div class="pipe-step"><div class="who">Entrada</div><div class="what">featureset diario</div><div class="why">una fila por merchant y día · abril a diciembre</div></div>
+        <div class="pipe-step"><div class="who">Input</div><div class="what">daily featureset</div><div class="why">one row per merchant and day · April to December</div></div>
         <div class="flow-arr">→</div>
-        <div class="pipe-step main"><div class="who">Positivos</div><div class="what">12 merchants</div><div class="why">su primer día suspendido</div></div>
+        <div class="pipe-step main"><div class="who">Positives</div><div class="what">12 merchants</div><div class="why">their first suspended day</div></div>
         <div class="flow-arr">+</div>
-        <div class="pipe-step"><div class="who">Negativos</div><div class="what">33.500 merchants</div><div class="why">nunca suspendidos, un día activo</div></div>
+        <div class="pipe-step"><div class="who">Negatives</div><div class="what">33,500 merchants</div><div class="why">never suspended, one active day</div></div>
         <div class="flow-arr">→</div>
-        <div class="pipe-step out"><div class="who">Dataset</div><div class="what">33.512 filas</div><div class="why">prevalencia 0,036 %</div></div>
+        <div class="pipe-step out"><div class="who">Dataset</div><div class="what">33,512 rows</div><div class="why">prevalence 0.036%</div></div>
       </div>
-      <p class="kicker" style="margin:1rem 0 0.5rem">Las 4 variables del modelo · salen de la foto del merchant</p>
+      <p class="kicker" style="margin:1rem 0 0.5rem">The model's 4 variables · they come from the merchant snapshot</p>
       <div class="row" style="grid-template-columns:repeat(4,1fr)">
-        <div class="card"><p class="kicker" style="margin-bottom:0.3rem">aprobacion_7d</p><p>La menor entre la tasa de aprobación a 7 y a 30 días. Si no hay actividad reciente, la histórica.</p><p class="muted" style="font-size:0.8rem">me_txn_approval_rate_7d · _30d</p></div>
-        <div class="card"><p class="kicker" style="margin-bottom:0.3rem">aprobacion_historica</p><p>Tasa de aprobación de toda la vida del merchant.</p><p class="muted" style="font-size:0.8rem">me_lifetime_txn_approval_rate</p></div>
-        <div class="card"><p class="kicker" style="margin-bottom:0.3rem">sin_actividad_7d</p><p>Marca 1 si no hubo intentos en los últimos 7 días.</p><p class="muted" style="font-size:0.8rem">me_txn_approval_rate_7d nula</p></div>
-        <div class="card"><p class="kicker" style="margin-bottom:0.3rem">log_max_rechazos_30d</p><p>Logaritmo del peor día de rechazos (intentos menos aprobadas) en los 30 días hasta la foto.</p><p class="muted" style="font-size:0.8rem">me_attempted_txn_sum_1d · me_approved_txn_sum_1d</p></div>
+        <div class="card"><p class="kicker" style="margin-bottom:0.3rem">aprobacion_7d</p><p>The lower of the 7-day and 30-day approval rates. If there is no recent activity, the lifetime rate.</p><p class="muted" style="font-size:0.8rem">me_txn_approval_rate_7d · _30d</p></div>
+        <div class="card"><p class="kicker" style="margin-bottom:0.3rem">aprobacion_historica</p><p>The merchant's lifetime approval rate.</p><p class="muted" style="font-size:0.8rem">me_lifetime_txn_approval_rate</p></div>
+        <div class="card"><p class="kicker" style="margin-bottom:0.3rem">sin_actividad_7d</p><p>Set to 1 if there were no attempts in the last 7 days.</p><p class="muted" style="font-size:0.8rem">me_txn_approval_rate_7d null</p></div>
+        <div class="card"><p class="kicker" style="margin-bottom:0.3rem">log_max_rechazos_30d</p><p>Log of the worst day of declines (attempts minus approved) in the 30 days up to the snapshot.</p><p class="muted" style="font-size:0.8rem">me_attempted_txn_sum_1d · me_approved_txn_sum_1d</p></div>
       </div>
     </section>
 
-    <section class="slide" data-sec="Las suspensiones">
-      <p class="kicker">De dónde sale el target · las 19 suspensiones con inicio observado</p>
+    <section class="slide" data-sec="The suspensions">
+      <p class="kicker">Where the target comes from · the 19 suspensions with an observed start</p>
       <div class="chart-block" style="flex:0 0 auto;padding:0.4rem 0.5rem 0.35rem">
-        <img src="../docs/suspensiones.png" alt="Transacciones diarias de los 19 merchants con inicio de suspensión" onload="window.dispatchEvent(new Event('resize'))" style="width:100%;height:22rem;object-fit:contain;display:block;border-radius:8px;background:#fff" />
-        <p class="legend" style="margin:0.35rem 0 0">Intentos en naranja, aprobadas en azul. Gris = suspendido, verde claro = estado nulo. Cada barra resume la actividad del día anterior.</p>
+        <img src="../docs/suspensiones.png" alt="Daily transactions of the 19 merchants with an observed suspension start" onload="window.dispatchEvent(new Event('resize'))" style="width:100%;height:22rem;object-fit:contain;display:block;border-radius:8px;background:#fff" />
+        <p class="legend" style="margin:0.35rem 0 0">Attempts in orange, approved in blue. Gray = suspended, light green = null state. Each bar summarizes the previous day's activity.</p>
       </div>
       <div class="row three" style="margin-top:0.6rem;gap:0.6rem">
-        <div class="card" style="padding:0.7rem 0.85rem"><p class="kicker" style="margin-bottom:0.25rem">12 · positivos</p><p>Los rechazos crecen hacia el inicio y llegan al máximo justo antes (M46B66AE, MA52FE20, M2971A5D). Son los casos que el modelo puede aprender.</p></div>
-        <div class="card" style="padding:0.7rem 0.85rem"><p class="kicker" style="margin-bottom:0.25rem">6 · sin actividad sospechosa</p><p>Operan normal o casi no operan hasta la suspensión (M315DBFD, M3182C56, MEA1EE5C). No hay nada que ver en la actividad, por eso quedan fuera.</p></div>
-        <div class="card" style="padding:0.7rem 0.85rem"><p class="kicker" style="margin-bottom:0.25rem">1 · historia incompleta</p><p>M002D3A13 empieza el primer día de datos: no se sabe cómo llegó.</p></div>
+        <div class="card" style="padding:0.7rem 0.85rem"><p class="kicker" style="margin-bottom:0.25rem">12 · positives</p><p>Declines grow toward the start and peak just before it (M46B66AE, MA52FE20, M2971A5D). These are the cases the model can learn.</p></div>
+        <div class="card" style="padding:0.7rem 0.85rem"><p class="kicker" style="margin-bottom:0.25rem">6 · no suspicious activity</p><p>They operate normally, or barely operate, until the suspension (M315DBFD, M3182C56, MEA1EE5C). There is nothing to see in the activity, so they stay out.</p></div>
+        <div class="card" style="padding:0.7rem 0.85rem"><p class="kicker" style="margin-bottom:0.25rem">1 · incomplete history</p><p>M002D3A13 starts on the first day of data: there is no way to see how they got there.</p></div>
       </div>
     </section>
 
-    <section class="slide" data-sec="Decisiones del target">
-      <p class="kicker">Decisiones del target · en qué se basan</p>
+    <section class="slide" data-sec="Target decisions">
+      <p class="kicker">Target decisions · what they rest on</p>
       <div class="cols2">
         <div class="dcard">
-          <p class="kicker">1 · ¿Qué fila es el positivo?</p>
-          <h3>La del primer día suspendido: es donde está la actividad previa.</h3>
-          <svg class="plot" data-chart='{"yMax":60,"ticks":[0,30,60],"unit":"","x":["−4","−3","−2","−1","0","+1","+2","+3"],"series":[{"name":"intentos","color":"#8fb7d6","y":[7.9,13.1,26.2,42.0,50.1,4.0,12.1,7.0]},{"name":"rechazos","color":"#e07a3d","y":[4.0,9.1,15.3,32.0,35.9,4.0,8.1,3.0]}]}'></svg>
-          <p class="legend inl"><i style="background:#8fb7d6"></i>intentos <i style="background:#e07a3d"></i>rechazos · suma de los 12 positivos, por fila relativa al primer día suspendido</p>
-          <p>Los rechazos suben fila a fila y llegan al máximo en la fila 0, que resume hasta el día anterior. Después de la suspensión, el merchant casi no opera.</p>
+          <p class="kicker">1 · Which row is the positive?</p>
+          <h3>The first suspended day: that is where the prior activity is.</h3>
+          <svg class="plot" data-chart='{"yMax":60,"ticks":[0,30,60],"unit":"","x":["−4","−3","−2","−1","0","+1","+2","+3"],"series":[{"name":"attempts","color":"#8fb7d6","y":[7.9,13.1,26.2,42.0,50.1,4.0,12.1,7.0]},{"name":"declines","color":"#e07a3d","y":[4.0,9.1,15.3,32.0,35.9,4.0,8.1,3.0]}]}'></svg>
+          <p class="legend inl"><i style="background:#8fb7d6"></i>attempts <i style="background:#e07a3d"></i>declines · sum of the 12 positives, by row relative to the first suspended day</p>
+          <p>Declines rise row by row and peak on row 0, which summarizes through the previous day. After the suspension, the merchant barely operates.</p>
         </div>
         <div class="dcard">
-          <p class="kicker">2 · ¿Cómo se eligen los negativos?</p>
-          <h3>Un día activo por merchant, con la misma mezcla de fechas que los positivos.</h3>
-          <svg class="plot" data-chart='{"yMax":40,"ticks":[0,20,40],"x":["abr","may","jun","jul","ago"],"series":[{"name":"positivos","color":"#e07a3d","y":[25.0,8.3,8.3,25.0,33.3]},{"name":"negativos","color":"#8fb7d6","y":[21.9,7.6,7.7,25.4,37.5]}]}'></svg>
-          <p class="legend inl"><i style="background:#e07a3d"></i>positivos <i style="background:#8fb7d6"></i>negativos · % de las filas por mes de la foto</p>
-          <p>Si los negativos salieran de cualquier fecha, el modelo podría aprender el calendario en vez del comportamiento. Con el sorteo ponderado, las dos curvas coinciden.</p>
+          <p class="kicker">2 · How are the negatives chosen?</p>
+          <h3>One active day per merchant, with the same date mix as the positives.</h3>
+          <svg class="plot" data-chart='{"yMax":40,"ticks":[0,20,40],"x":["Apr","May","Jun","Jul","Aug"],"series":[{"name":"positives","color":"#e07a3d","y":[25.0,8.3,8.3,25.0,33.3]},{"name":"negatives","color":"#8fb7d6","y":[21.9,7.6,7.7,25.4,37.5]}]}'></svg>
+          <p class="legend inl"><i style="background:#e07a3d"></i>positives <i style="background:#8fb7d6"></i>negatives · % of rows by snapshot month</p>
+          <p>If the negatives came from any date, the model could learn the calendar instead of the behavior. With the weighted draw, the two curves match.</p>
         </div>
       </div>
     </section>
 
-    <section class="slide" data-sec="Qué se ve antes">
-      <p class="kicker">Qué se ve antes de una suspensión · las variables del modelo</p>
+    <section class="slide" data-sec="What shows up before">
+      <p class="kicker">What shows up before a suspension · the model variables</p>
       <div class="cols2">
         <div class="dcard">
-          <p class="kicker">Variable 1 · aprobación reciente</p>
-          <h3>Aprueban un cuarto de lo que aprueba el resto.</h3>
+          <p class="kicker">Variable 1 · recent approval</p>
+          <h3>They approve a quarter of what the rest approve.</h3>
           <div class="hbars">
-            <div class="hbar"><span>positivos</span><div class="track"><div class="fill" style="width:30%"></div></div><span class="n">26 %</span></div>
-            <div class="hbar"><span>resto</span><div class="track"><div class="fill" style="width:100%;background:var(--navy)"></div></div><span class="n">87 %</span></div>
+            <div class="hbar"><span>positives</span><div class="track"><div class="fill" style="width:30%"></div></div><span class="n">26%</span></div>
+            <div class="hbar"><span>rest</span><div class="track"><div class="fill" style="width:100%;background:var(--navy)"></div></div><span class="n">87%</span></div>
           </div>
-          <p class="muted">La peor entre la tasa a 7 y a 30 días. Sin actividad reciente, se usa la histórica.</p>
+          <p class="muted">The worse of the 7-day and 30-day rates. With no recent activity, the lifetime rate is used.</p>
         </div>
         <div class="dcard">
-          <p class="kicker">Variable 2 · aprobación histórica</p>
-          <h3>También venían peor de antes, pero la caída reciente es más fuerte.</h3>
+          <p class="kicker">Variable 2 · lifetime approval</p>
+          <h3>They were already worse before, but the recent drop is stronger.</h3>
           <div class="hbars">
-            <div class="hbar"><span>positivos</span><div class="track"><div class="fill" style="width:67%"></div></div><span class="n">58 %</span></div>
-            <div class="hbar"><span>resto</span><div class="track"><div class="fill" style="width:100%;background:var(--navy)"></div></div><span class="n">86 %</span></div>
+            <div class="hbar"><span>positives</span><div class="track"><div class="fill" style="width:67%"></div></div><span class="n">58%</span></div>
+            <div class="hbar"><span>rest</span><div class="track"><div class="fill" style="width:100%;background:var(--navy)"></div></div><span class="n">86%</span></div>
           </div>
-          <p class="muted">Tasa de aprobación de toda la vida del merchant.</p>
+          <p class="muted">The merchant's lifetime approval rate.</p>
         </div>
         <div class="dcard">
-          <p class="kicker">Variable 3 · peor día de rechazos en 30 días</p>
-          <h3>Un día con muchos rechazos: la mediana de los positivos es 6,5; la del resto, 0.</h3>
+          <p class="kicker">Variable 3 · worst day of declines in 30 days</p>
+          <h3>A day with many declines: the median of the positives is 6.5; the rest, 0.</h3>
           <div class="hbars">
-            <div class="hbar"><span>positivos</span><div class="track"><div class="fill" style="width:100%"></div></div><span class="n">6,4</span></div>
-            <div class="hbar"><span>resto</span><div class="track"><div class="fill" style="width:17%;background:var(--navy)"></div></div><span class="n">1,1</span></div>
+            <div class="hbar"><span>positives</span><div class="track"><div class="fill" style="width:100%"></div></div><span class="n">6.4</span></div>
+            <div class="hbar"><span>rest</span><div class="track"><div class="fill" style="width:17%;background:var(--navy)"></div></div><span class="n">1.1</span></div>
           </div>
-          <p class="muted">Media de rechazos del peor día. Entra en logaritmo.</p>
+          <p class="muted">Mean declines on the worst day. It enters as a log.</p>
         </div>
         <div class="dcard">
-          <p class="kicker">Variable 4 · sin actividad a 7 días</p>
-          <h3>Ninguno de los 12 estaba inactivo; casi la mitad del resto sí.</h3>
+          <p class="kicker">Variable 4 · no activity in 7 days</p>
+          <h3>None of the 12 was inactive; almost half of the rest were.</h3>
           <div class="hbars">
-            <div class="hbar"><span>positivos</span><div class="track"><div class="fill" style="width:2%"></div></div><span class="n">0 %</span></div>
-            <div class="hbar"><span>resto</span><div class="track"><div class="fill" style="width:100%;background:var(--navy)"></div></div><span class="n">46 %</span></div>
+            <div class="hbar"><span>positives</span><div class="track"><div class="fill" style="width:2%"></div></div><span class="n">0%</span></div>
+            <div class="hbar"><span>rest</span><div class="track"><div class="fill" style="width:100%;background:var(--navy)"></div></div><span class="n">46%</span></div>
           </div>
-          <p class="muted">Un merchant que no opera no puede mostrar el patrón: la marca ayuda al modelo a no confundirlo con uno sano.</p>
+          <p class="muted">A merchant who does not operate cannot show the pattern: the flag helps the model not to confuse them with a healthy one.</p>
         </div>
       </div>
     </section>
 
-    <section class="slide tight" data-sec="Modelo">
-      <p class="kicker">El modelo · en qué se basa la elección</p>
+    <section class="slide tight" data-sec="Model">
+      <p class="kicker">The model · what the choice rests on</p>
       <div class="row" style="grid-template-columns:0.85fr 1.25fr">
         <div class="chart-block">
-          <h3>Suspensiones capturadas en el 5 % de mayor score (de 12)</h3>
+          <h3>Suspensions captured in the top 5% of the score (of 12)</h3>
           <div class="hbars" style="gap:0.85rem;margin:0.5rem 0">
-            <div class="hbar"><span>azar</span><div class="track"><div class="fill" style="width:5.7%;background:var(--muted)"></div></div><span class="n">0,6</span></div>
-            <div class="hbar"><span>logística A</span><div class="track"><div class="fill" style="width:78.3%;background:var(--navy)"></div></div><span class="n">8,3</span></div>
-            <div class="hbar"><span>logística B</span><div class="track"><div class="fill" style="width:100%"></div></div><span class="n">10,6</span></div>
-            <div class="hbar"><span>logística C</span><div class="track"><div class="fill" style="width:93.4%;background:var(--navy)"></div></div><span class="n">9,9</span></div>
+            <div class="hbar"><span>chance</span><div class="track"><div class="fill" style="width:5.7%;background:var(--muted)"></div></div><span class="n">0.6</span></div>
+            <div class="hbar"><span>logistic A</span><div class="track"><div class="fill" style="width:78.3%;background:var(--navy)"></div></div><span class="n">8.3</span></div>
+            <div class="hbar"><span>logistic B</span><div class="track"><div class="fill" style="width:100%"></div></div><span class="n">10.6</span></div>
+            <div class="hbar"><span>logistic C</span><div class="track"><div class="fill" style="width:93.4%;background:var(--navy)"></div></div><span class="n">9.9</span></div>
           </div>
-          <p class="legend">Cada merchant se predice con un modelo que no lo vio · 5 folds × 10 semillas · empates repartidos al azar</p>
+          <p class="legend">Each merchant is predicted by a model that did not see them · 5 folds × 10 seeds · ties split at random</p>
         </div>
         <table>
-          <thead><tr><th>Modelo</th><th>Variables</th><th class="r">N</th><th class="r">PR-AUC</th></tr></thead>
+          <thead><tr><th>Model</th><th>Variables</th><th class="r">N</th><th class="r">PR-AUC</th></tr></thead>
           <tbody>
-            <tr><td>A</td><td>aprobación reciente</td><td class="r">1</td><td class="r">0,0060</td></tr>
-            <tr><td><strong>B</strong></td><td>las de A · aprobación histórica · sin actividad a 7 días · peor día de rechazos</td><td class="r"><strong>4</strong></td><td class="r"><strong>0,0216</strong></td></tr>
-            <tr><td>C</td><td>las de B · ticket a 30 días · intentos a 7 días</td><td class="r">6</td><td class="r">0,0234</td></tr>
-            <tr><td>Prevalencia</td><td></td><td class="r"></td><td class="r">0,0004</td></tr>
+            <tr><td>A</td><td>recent approval</td><td class="r">1</td><td class="r">0.0060</td></tr>
+            <tr><td><strong>B</strong></td><td>A's · lifetime approval · no activity in 7 days · worst day of declines</td><td class="r"><strong>4</strong></td><td class="r"><strong>0.0216</strong></td></tr>
+            <tr><td>C</td><td>B's · 30-day ticket · 7-day attempts</td><td class="r">6</td><td class="r">0.0234</td></tr>
+            <tr><td>Prevalence</td><td></td><td class="r"></td><td class="r">0.0004</td></tr>
           </tbody>
         </table>
       </div>
       <div class="row eq" style="margin-top:0.9rem">
-        <div class="card"><p class="kicker" style="margin-bottom:0.3rem">Por qué B y no C</p><p>C suma ticket e intentos y no captura más: 9,9 contra 10,6. Se queda el modelo más simple.</p></div>
-        <div class="card"><p class="kicker" style="margin-bottom:0.3rem">Cómo se entrena</p><p>Regularización L2 fuerte (C = 0,1), pesos de clase balanceados, imputación por mediana y variables estandarizadas. El score no está calibrado: por eso los cortes son por percentil.</p></div>
+        <div class="card"><p class="kicker" style="margin-bottom:0.3rem">Why B and not C</p><p>C adds ticket and attempts and does not capture more: 9.9 against 10.6. The simpler model stays.</p></div>
+        <div class="card"><p class="kicker" style="margin-bottom:0.3rem">How it is trained</p><p>Strong L2 regularization (C = 0.1), balanced class weights, median imputation, and standardized variables. The score is not calibrated: that is why the cuts are percentiles.</p></div>
       </div>
     </section>
 
     <section class="slide" data-sec="Score">
-      <p class="kicker">Score · en qué se basa el uso del score</p>
+      <p class="kicker">Score · what the use of the score rests on</p>
       <div class="chart-block" style="flex:1 1 auto">
-        <h3>De cada 100 transacciones, cuántas son de cada tramo y cuánto del fraude traen</h3>
-        <svg class="plot" style="max-height:none;min-height:17rem" data-chart='{"type":"gbars","w":980,"h":320,"bar":70,"barUnit":true,"yMax":60,"ticks":[0,20,40,60],"unit":" %","groups":["0–50 %","50–90 %","90–95 %","95–99 %","99–100 %"],"series":[{"name":"transacciones","color":"#8fb7d6","y":[6.1,55.5,24.4,11.7,2.4]},{"name":"fraude","color":"#e07a3d","y":[13.4,37.5,13.3,29.5,6.3]}]}'></svg>
-        <p class="legend inl"><i style="background:#8fb7d6"></i>% de las transacciones <i style="background:#e07a3d"></i>% del fraude · tramos del percentil de riesgo del merchant</p>
-        <p class="muted" style="font-size:0.85rem;margin:0.3rem 0 0">Donde la barra naranja supera a la azul, el tramo trae más fraude que su peso: 95–99 % (29,5 contra 11,7) y 99–100 % (6,3 contra 2,4).</p>
+        <h3>Of every 100 transactions, how many fall in each band and how much of the fraud they bring</h3>
+        <svg class="plot" style="max-height:none;min-height:17rem" data-chart='{"type":"gbars","w":980,"h":320,"bar":70,"barUnit":true,"yMax":60,"ticks":[0,20,40,60],"unit":" %","groups":["0–50%","50–90%","90–95%","95–99%","99–100%"],"series":[{"name":"transactions","color":"#8fb7d6","y":[6.1,55.5,24.4,11.7,2.4]},{"name":"fraud","color":"#e07a3d","y":[13.4,37.5,13.3,29.5,6.3]}]}'></svg>
+        <p class="legend inl"><i style="background:#8fb7d6"></i>% of transactions <i style="background:#e07a3d"></i>% of fraud · bands of the merchant's risk percentile</p>
+        <p class="muted" style="font-size:0.85rem;margin:0.3rem 0 0">Where the orange bar beats the blue one, the band brings more fraud than its weight: 95–99% (29.5 against 11.7) and 99–100% (6.3 against 2.4).</p>
       </div>
       <div class="row" style="grid-template-columns:0.7fr 1.35fr 1fr;margin-top:0.8rem">
-        <div class="card"><div class="num">931 de 2.600<span>fraudes en el 5 % más riesgoso · 2.014 merchants</span></div></div>
-        <div class="card"><p class="kicker" style="margin-bottom:0.3rem">Qué dice y qué no</p><p>Ordena merchants, no transacciones: el 5 % más riesgoso trae el 36 % del fraude, pero dentro de un merchant todas las transacciones comparten el score. Se entrena con suspensión, no con fraude. El tramo 0–50 % tiene una tasa de fraude alta (0,08 %): son merchants chicos que el score no ve.</p></div>
-        <div class="card"><p class="kicker" style="margin-bottom:0.3rem">Por qué cortes por percentil</p><p>La probabilidad no está calibrada: con 0,036 % de prevalencia y clases pesadas, 0,5 no significa nada. El percentil de riesgo es estable y se puede explicar a negocio.</p></div>
+        <div class="card"><div class="num">931 of 2,600<span>frauds in the riskiest 5% · 2,014 merchants</span></div></div>
+        <div class="card"><p class="kicker" style="margin-bottom:0.3rem">What it says and what it does not</p><p>It ranks merchants, not transactions: the riskiest 5% brings 36% of the fraud, but inside a merchant every transaction shares the score. It is trained on suspension, not on fraud. The 0–50% band has a high fraud rate (0.08%): small merchants the score does not see.</p></div>
+        <div class="card"><p class="kicker" style="margin-bottom:0.3rem">Why percentile cuts</p><p>The probability is not calibrated: with 0.036% prevalence and heavy classes, 0.5 means nothing. The risk percentile is stable and can be explained to the business.</p></div>
       </div>
     </section>
 
-    <section class="slide" data-sec="Pre-autorización">
-      <p class="kicker">Reglas de pre-autorización · en qué se basan los cortes</p>
-      <h2>Tradeoff entre el fraude que se evita y el margen que se pierde.</h2>
+    <section class="slide" data-sec="Pre-authorization">
+      <p class="kicker">Pre-authorization rules · what the cuts rest on</p>
+      <h2>Trade-off between the fraud that is avoided and the margin that is lost.</h2>
       <div class="row" style="grid-template-columns:1.5fr 1fr">
         <div class="chart-block">
-          <h3>Equilibrio por volumen y puesto del score · conviene si la barra supera el margen (1 %)</h3>
-          <svg class="plot" data-chart='{"type":"gbars","yMax":3,"ticks":[0,1,2,3],"unit":" %","mark":1,"markLabel":"margen 1 %","markColor":"#f4efe6","groups":["≥ 0,90","≥ 0,95","≥ 0,99"],"series":[{"name":"volumen baja","color":"#8fb7d6","y":[1.56,1.75,0.91]},{"name":"volumen media","color":"#e07a3d","y":[0.68,0.64,2.34]},{"name":"volumen alta","color":"#c5d4a8","y":[0.24,0.42,0.09]}]}'></svg>
-          <p class="legend inl"><i style="background:#8fb7d6"></i>volumen bajo, 1–9 <i style="background:#e07a3d"></i>volumen medio, 10–99 <i style="background:#c5d4a8"></i>volumen alto, 100 o más · el eje es el puesto del score</p>
+          <h3>Equilibrium by volume and score rank · it pays if the bar clears the margin (1%)</h3>
+          <svg class="plot" data-chart='{"type":"gbars","yMax":3,"ticks":[0,1,2,3],"unit":" %","mark":1,"markLabel":"margin 1%","markColor":"#f4efe6","groups":["≥ 0.90","≥ 0.95","≥ 0.99"],"series":[{"name":"low volume","color":"#8fb7d6","y":[1.56,1.75,0.91]},{"name":"medium volume","color":"#e07a3d","y":[0.68,0.64,2.34]},{"name":"high volume","color":"#c5d4a8","y":[0.24,0.42,0.09]}]}'></svg>
+          <p class="legend inl"><i style="background:#8fb7d6"></i>low volume, 1–9 <i style="background:#e07a3d"></i>medium volume, 10–99 <i style="background:#c5d4a8"></i>high volume, 100 or more · the axis is the score rank</p>
         </div>
         <div style="display:flex;flex-direction:column;gap:0.7rem">
           <div class="card">
-            <p class="kicker" style="margin-bottom:0.3rem">La regla</p>
-            <p><strong>Volumen bajo</strong> con riesgo ≥ 90 %: beneficio neto $0,24 M, el mayor de ese nivel.</p>
-            <p><strong>Volumen medio</strong> con riesgo ≥ 99 %: equilibrio 2,3 %, beneficio $0,14 M.</p>
-            <p><strong>Volumen alto</strong>: nunca rechazar. A 90 % se pierde el 24,9 % del TPV bueno.</p>
+            <p class="kicker" style="margin-bottom:0.3rem">The rule</p>
+            <p><strong>Low volume</strong> with risk ≥ 90%: net benefit $0.24 M, the largest at that level.</p>
+            <p><strong>Medium volume</strong> with risk ≥ 99%: equilibrium 2.3%, benefit $0.14 M.</p>
+            <p><strong>High volume</strong>: never decline. At 90%, 24.9% of good TPV is lost.</p>
           </div>
           <div class="card">
-            <p class="kicker" style="margin-bottom:0.3rem">El balance es positivo</p>
-            <p><strong>$0,91 M</strong> de fraude − <strong>$0,53 M</strong> de margen = <strong>$0,38 M</strong>.</p>
+            <p class="kicker" style="margin-bottom:0.3rem">The balance is positive</p>
+            <p><strong>$0.91 M</strong> of fraud − <strong>$0.53 M</strong> of margin = <strong>$0.38 M</strong>.</p>
           </div>
         </div>
       </div>
       <div class="kpis" style="margin-top:0.9rem">
-        <div class="card"><div class="num">1.477<span>merchants rechazados · 19.193 transacciones</span></div></div>
-        <div class="card"><div class="num">$0,91 M<span>de fraude evitado · 12,3 % del fraude</span></div></div>
-        <div class="card"><div class="num">$53,2 M<span>de TPV bueno rechazado · 1,78 %</span></div></div>
-        <div class="card"><div class="num">93,17 %<span>aprobación final</span></div></div>
+        <div class="card"><div class="num">1,477<span>merchants declined · 19,193 transactions</span></div></div>
+        <div class="card"><div class="num">$0.91 M<span>of fraud avoided · 12.3% of fraud</span></div></div>
+        <div class="card"><div class="num">$53.2 M<span>of good TPV declined · 1.78%</span></div></div>
+        <div class="card"><div class="num">93.17%<span>final approval</span></div></div>
       </div>
     </section>
 
-    <section class="slide" data-sec="Post-autorización">
-      <p class="kicker">Reglas de post-autorización · cómo se armó la retención</p>
-      <h2>La venta se aprueba. Se decide cuándo cobra el merchant.</h2>
+    <section class="slide" data-sec="Post-authorization">
+      <p class="kicker">Post-authorization rules · how the hold was built</p>
+      <h2>The sale is approved. The decision is when the merchant gets paid.</h2>
       <div class="post-steps">
         <div class="dcard">
-          <p class="kicker">1 · Volumen alto</p>
-          <h3>Revisión manual</h3>
-          <p class="axis">Equilibrio de rechazar volumen alto. La línea marca el 1,5 %.</p>
-          <svg class="plot" data-chart='{"type":"gbars","w":360,"h":220,"yMax":2,"ticks":[0,1,2],"unit":" %","barUnit":true,"bar":48,"mark":1.5,"markLabel":"1,5 %","markColor":"#f4efe6","groups":["≥ 0,90","≥ 0,95","≥ 0,99"],"series":[{"name":"alto","color":"#c5d4a8","y":[0.24,0.42,0.09]}]}'></svg>
-          <p>Ningún corte llega al mínimo. A riesgo ≥ 95 % el equilibrio es 0,42 %: <strong>244 merchants</strong> los mira una persona. 12,5 % del TPV y 23,6 % del fraude.</p>
+          <p class="kicker">1 · High volume</p>
+          <h3>Manual review</h3>
+          <p class="axis">Equilibrium of declining high volume. The line marks 1.5%.</p>
+          <svg class="plot" data-chart='{"type":"gbars","w":360,"h":220,"yMax":2,"ticks":[0,1,2],"unit":" %","barUnit":true,"bar":48,"mark":1.5,"markLabel":"1.5%","markColor":"#f4efe6","groups":["≥ 0.90","≥ 0.95","≥ 0.99"],"series":[{"name":"high","color":"#c5d4a8","y":[0.24,0.42,0.09]}]}'></svg>
+          <p>No cut clears the minimum. At risk ≥ 95% the equilibrium is 0.42%: <strong>244 merchants</strong> are looked at by a person. 12.5% of TPV and 23.6% of fraud.</p>
         </div>
         <div class="dcard">
-          <p class="kicker">2 · Puesto del score</p>
-          <h3>Retención de 7 días</h3>
-          <p class="axis">% del fraude retenido contra % del TPV. La punteada es el azar.</p>
+          <p class="kicker">2 · Score rank</p>
+          <h3>7-day hold</h3>
+          <p class="axis">% of fraud held against % of TPV. The dashed line is chance.</p>
           <svg class="plot" data-chart='{"type":"xy","w":360,"h":220,"xMin":0,"xMax":36,"yMin":0,"yMax":48,"xticks":[0,10,20,30],"ticks":[0,16,32,48],"unit":" %","series":[{"color":"#a79e91","dash":"5 4","x":[0,36],"y":[0,36]}],"dots":[{"x":15.6,"y":26.7,"r":8,"fill":"none","stroke":"#e07a3d","sw":2.4},{"x":18.3,"y":33.3,"shape":"star","r":9,"fill":"#e07a3d"}]}'></svg>
-          <p class="legend inl"><i style="background:transparent;border:2px solid #e07a3d"></i>solo el puesto 0,95 <i style="background:#e07a3d"></i>revisión + sin actividad</p>
-          <p>Retener solo por el puesto queda junto al azar. La estrella es la revisión manual más los sin actividad: <strong>18,3 % del TPV</strong> y <strong>33,3 % del fraude</strong>. Los sin actividad son 8.620 merchants y esperan 7 días.</p>
+          <p class="legend inl"><i style="background:transparent;border:2px solid #e07a3d"></i>rank 0.95 alone <i style="background:#e07a3d"></i>review + no activity</p>
+          <p>Holding by rank alone sits next to chance. The star is manual review plus no activity: <strong>18.3% of TPV</strong> and <strong>33.3% of fraud</strong>. The inactive ones are 8,620 merchants and they wait 7 days.</p>
         </div>
         <div class="dcard">
-          <p class="kicker">3 · La transacción</p>
-          <h3>CNP y monto alto</h3>
-          <p class="axis">CNP · millones de fraude retenido. La curva está plana y después baja.</p>
-          <svg class="plot mini" data-chart='{"type":"xy","w":360,"h":150,"logX":true,"xMin":50,"xMax":80000,"yMin":0,"yMax":2,"xticks":[100,500,5000,50000],"xtickLabels":["100","500","5 mil","50 mil"],"ticks":[0,1,2],"unit":"","series":[{"color":"#e07a3d","x":[50,100,200,500,1000,2000,5000,10000,20000,50000],"y":[1.55,1.55,1.55,1.54,1.5,1.44,1.25,0.9,0.61,0.06]}],"dots":[{"x":500,"y":1.54,"r":6,"fill":"none","stroke":"#f4efe6","sw":2.2}]}'></svg>
-          <p class="axis">Cualquier monto. Naranja: % del fraude. Azul: % del TPV.</p>
+          <p class="kicker">3 · The transaction</p>
+          <h3>CNP and high amount</h3>
+          <p class="axis">CNP · millions of fraud held. The curve is flat and then falls.</p>
+          <svg class="plot mini" data-chart='{"type":"xy","w":360,"h":150,"logX":true,"xMin":50,"xMax":80000,"yMin":0,"yMax":2,"xticks":[100,500,5000,50000],"xtickLabels":["100","500","5k","50k"],"ticks":[0,1,2],"unit":"","series":[{"color":"#e07a3d","x":[50,100,200,500,1000,2000,5000,10000,20000,50000],"y":[1.55,1.55,1.55,1.54,1.5,1.44,1.25,0.9,0.61,0.06]}],"dots":[{"x":500,"y":1.54,"r":6,"fill":"none","stroke":"#f4efe6","sw":2.2}]}'></svg>
+          <p class="axis">Any amount. Orange: % of fraud. Blue: % of TPV.</p>
           <div class="cortes">
             <div class="bloque">
-              <div class="quien">≥ $5.000</div>
-              <div class="hbar"><span>fraude</span><div class="track"><div class="fill" style="width:100%"></div></div><span class="n">75 %</span></div>
-              <div class="hbar"><span>TPV</span><div class="track"><div class="fill" style="width:40%;background:var(--navy)"></div></div><span class="n">30 %</span></div>
+              <div class="quien">≥ $5,000</div>
+              <div class="hbar"><span>fraud</span><div class="track"><div class="fill" style="width:100%"></div></div><span class="n">75%</span></div>
+              <div class="hbar"><span>TPV</span><div class="track"><div class="fill" style="width:40%;background:var(--navy)"></div></div><span class="n">30%</span></div>
             </div>
             <div class="bloque on">
-              <div class="quien">≥ $20.000 · el corte</div>
-              <div class="hbar"><span>fraude</span><div class="track"><div class="fill" style="width:44%"></div></div><span class="n">32 %</span></div>
-              <div class="hbar"><span>TPV</span><div class="track"><div class="fill" style="width:16%;background:var(--navy)"></div></div><span class="n">12 %</span></div>
+              <div class="quien">≥ $20,000 · the cut</div>
+              <div class="hbar"><span>fraud</span><div class="track"><div class="fill" style="width:44%"></div></div><span class="n">32%</span></div>
+              <div class="hbar"><span>TPV</span><div class="track"><div class="fill" style="width:16%;background:var(--navy)"></div></div><span class="n">12%</span></div>
             </div>
             <div class="bloque">
-              <div class="quien">≥ $50.000</div>
-              <div class="hbar"><span>fraude</span><div class="track"><div class="fill" style="width:3%"></div></div><span class="n">2 %</span></div>
-              <div class="hbar"><span>TPV</span><div class="track"><div class="fill" style="width:5%;background:var(--navy)"></div></div><span class="n">4 %</span></div>
+              <div class="quien">≥ $50,000</div>
+              <div class="hbar"><span>fraud</span><div class="track"><div class="fill" style="width:3%"></div></div><span class="n">2%</span></div>
+              <div class="hbar"><span>TPV</span><div class="track"><div class="fill" style="width:5%;background:var(--navy)"></div></div><span class="n">4%</span></div>
             </div>
           </div>
-          <p>El CNP se mantiene en $1,5 M hasta $500 y después baja. En $20.000 el fraude queda en 32 % y el TPV en 12 %, unas 100 por día. En $5.000 el TPV sube a 30 %. En $50.000 los dos quedan cerca del 4 %.</p>
+          <p>CNP stays at $1.5 M through $500 and then falls. At $20,000 fraud stays at 32% and TPV at 12%, about 100 a day. At $5,000 TPV rises to 30%. At $50,000 the two sit near 4%.</p>
         </div>
       </div>
       <div class="card post-foot">
-        <p>Lo que no cae en ninguna se paga enseguida. Un mismo pago puede entrar en más de una regla, así que los porcentajes no se suman. Juntas demoran el <strong>30,6 %</strong> del TPV y cubren el <strong>68,6 %</strong> del fraude, en <strong>2,13 días</strong>. Pasa cerca del 28 %.</p>
+        <p>What hits no rule is paid immediately. One payment can fall under more than one rule, so the percentages do not add. Together they delay <strong>30.6%</strong> of TPV and cover <strong>68.6%</strong> of fraud, in <strong>2.13 days</strong>. About 28% still passes.</p>
       </div>
     </section>
 
-    <section class="slide tight" data-sec="Emisores">
-      <p class="kicker">Bonus · paquetes de transacciones para los emisores</p>
-      <h2>El paquete principal queda 31 % debajo de lo aprobado.</h2>
+    <section class="slide tight" data-sec="Issuers">
+      <p class="kicker">Bonus · transaction packages for the issuers</p>
+      <h2>The main package sits 31% below everything approved.</h2>
       <div class="row" style="grid-template-columns:1.2fr 0.8fr">
         <div class="chart-block">
-          <h3>Tasa de fraude por paquete · % de las transacciones aprobadas</h3>
+          <h3>Fraud rate by package · % of approved transactions</h3>
           <div class="hbars" style="gap:1rem;margin:0.6rem 0">
-            <div class="hbar" style="grid-template-columns:5rem 1fr 4.2rem"><span>bajo</span><div class="track"><div class="fill" style="width:17.5%;background:var(--ok)"></div></div><span class="n">0,026 %</span></div>
-            <div class="hbar" style="grid-template-columns:5rem 1fr 4.2rem"><span>medio</span><div class="track"><div class="fill" style="width:61.7%;background:var(--navy)"></div></div><span class="n">0,090 %</span></div>
-            <div class="hbar" style="grid-template-columns:5rem 1fr 4.2rem"><span>alto</span><div class="track"><div class="fill" style="width:100%"></div></div><span class="n">0,146 %</span></div>
+            <div class="hbar" style="grid-template-columns:5rem 1fr 4.2rem"><span>low</span><div class="track"><div class="fill" style="width:17.5%;background:var(--ok)"></div></div><span class="n">0.026%</span></div>
+            <div class="hbar" style="grid-template-columns:5rem 1fr 4.2rem"><span>medium</span><div class="track"><div class="fill" style="width:61.7%;background:var(--navy)"></div></div><span class="n">0.090%</span></div>
+            <div class="hbar" style="grid-template-columns:5rem 1fr 4.2rem"><span>high</span><div class="track"><div class="fill" style="width:100%"></div></div><span class="n">0.146%</span></div>
           </div>
-          <p class="legend">Los tres usan las reglas ya definidas: no hay un criterio nuevo que defender.</p>
+          <p class="legend">The three use the rules already defined: there is no new criterion to defend.</p>
         </div>
         <table>
-          <thead><tr><th>Paquete</th><th class="r">% txns</th><th class="r">% TPV</th></tr></thead>
+          <thead><tr><th>Package</th><th class="r">% txns</th><th class="r">% TPV</th></tr></thead>
           <tbody>
-            <tr><td>Bajo</td><td class="r">84,0 %</td><td class="r">77,0 %</td></tr>
-            <tr><td>Medio</td><td class="r">13,6 %</td><td class="r">16,2 %</td></tr>
-            <tr><td>Alto</td><td class="r">2,4 %</td><td class="r">6,8 %</td></tr>
+            <tr><td>Low</td><td class="r">84.0%</td><td class="r">77.0%</td></tr>
+            <tr><td>Medium</td><td class="r">13.6%</td><td class="r">16.2%</td></tr>
+            <tr><td>High</td><td class="r">2.4%</td><td class="r">6.8%</td></tr>
           </tbody>
         </table>
       </div>
       <div class="row three" style="margin-top:0.6rem">
-        <div class="card"><p class="kicker" style="margin-bottom:0.3rem">Bajo · el principal</p><p>Aprobado, con actividad y riesgo menor a 0,95. El volumen bajo desde 0,90 se rechaza y no entra. Son 28.360 merchants.</p></div>
-        <div class="card"><p class="kicker" style="margin-bottom:0.3rem">Medio</p><p>Volumen alto con riesgo de 0,95 a 0,99: lo revisa una persona. Sin actividad por debajo de 0,99: espera 7 días. El resto de ese tramo también entra. Son 9.582 merchants.</p></div>
-        <div class="card"><p class="kicker" style="margin-bottom:0.3rem">Alto</p><p>Volumen bajo desde 0,90, o volumen medio desde 0,99: se rechaza. También entra quien llega a 0,99 en cualquier volumen. Son 1.411 merchants.</p></div>
+        <div class="card"><p class="kicker" style="margin-bottom:0.3rem">Low · the main one</p><p>Approved, with activity and risk below 0.95. Low volume from 0.90 is declined and does not enter. 28,360 merchants.</p></div>
+        <div class="card"><p class="kicker" style="margin-bottom:0.3rem">Medium</p><p>High volume with risk from 0.95 to 0.99: a person reviews it. No activity below 0.99: waits 7 days. The rest of that band enters too. 9,582 merchants.</p></div>
+        <div class="card"><p class="kicker" style="margin-bottom:0.3rem">High</p><p>Low volume from 0.90, or medium volume from 0.99: declined. Anyone who reaches 0.99 at any volume also enters. 1,411 merchants.</p></div>
       </div>
     </section>
 
-        <section class="slide tight" data-sec="IA">
-      <p class="kicker">Transparencia</p>
-      <h2>Cómo se usó la IA.</h2>
+        <section class="slide tight" data-sec="AI">
+      <p class="kicker">Transparency</p>
+      <h2>How AI was used.</h2>
       <div class="cols2">
         <div class="dcard">
-          <h3>Qué hizo Claude Code</h3>
+          <h3>What Claude Code did</h3>
           <ul>
-            <li>Escribir y ejecutar los notebooks del pipeline: dataset, variables, modelo, score, reglas.</li>
-            <li>Proponer alternativas y cuantificarlas con los datos.</li>
-            <li>Redactar el registro de decisiones y esta presentación.</li>
+            <li>Write and run the pipeline notebooks: dataset, variables, model, score, rules.</li>
+            <li>Propose alternatives and quantify them on the data.</li>
+            <li>Draft the decision log and this presentation.</li>
           </ul>
         </div>
         <div class="dcard">
-          <h3>Qué se decidió y se revisó a mano</h3>
+          <h3>What was decided and reviewed by hand</h3>
           <ul>
-            <li>El target, el día de la foto, qué casos quedan fuera y por qué.</li>
-            <li>La lectura de cada resultado, incluidos los errores que aparecieron en el camino y se corrigieron.</li>
-            <li>Los supuestos de negocio y los límites que se declaran.</li>
+            <li>The target, the snapshot day, which cases stay out, and why.</li>
+            <li>The reading of each result, including the mistakes that showed up along the way and were corrected.</li>
+            <li>The business assumptions and the limits that are stated.</li>
           </ul>
         </div>
       </div>
-      <p class="sub" style="margin-top:0.8rem">Todas las decisiones, con sus pruebas, están en <em>docs/decisions.md</em>.</p>
+      <p class="sub" style="margin-top:0.8rem">Every decision, with its evidence, is in <em>docs/decisions.md</em>.</p>
     </section>
 
-    <section class="slide" data-sec="Gracias" style="justify-content:center;align-items:center;text-align:center">
+    <section class="slide" data-sec="Thanks" style="justify-content:center;align-items:center;text-align:center">
       <p class="kicker">Clip · Data Science Challenge 2026</p>
-      <h1>Muchas gracias.</h1>
+      <h1>Thank you.</h1>
     </section>
 
   </main>
 
   <div class="bar">
-    <span id="sec">Inicio</span>
+    <span id="sec">Start</span>
     <div class="dots" id="dots"></div>
     <div class="nav">
       <span id="pos">1 / 1</span>
