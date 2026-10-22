@@ -446,12 +446,11 @@
       <h1>A qué merchant dejar pasar,<br />a cuál frenar.</h1>
       <p class="lead" style="margin-top:1.4rem">Un score de riesgo por merchant, unido a 7,08 millones de transacciones, y las reglas de pre y post autorización que salen de él.</p>
       <p style="margin-top:1.8rem;font-size:1.3rem;font-weight:650">Leandro Garcia</p>
-      <p class="muted" style="margin-top:auto;padding-top:2.4rem">Flechas o clic en los puntos. 15 diapositivas.</p>
+      <p class="muted" style="margin-top:auto;padding-top:2.4rem">Flechas o clic en los puntos. 14 diapositivas.</p>
     </section>
 
     <section class="slide tight" data-sec="Negocio">
       <p class="kicker">El problema de negocio</p>
-      <h2>Unos pocos merchants riesgosos bajan la aprobación de todos.</h2>
       <div class="pipe sol">
         <div class="pipe-step"><div class="who">Merchants</div><div class="what">se agrupan</div><div class="why">Clip los junta en afiliaciones</div></div>
         <div class="flow-arr">→</div>
@@ -478,11 +477,10 @@
 
     <section class="slide tight" data-sec="Resultado">
       <p class="kicker">El resultado en una lámina</p>
-      <h2>El score ordena bien al 5 % más riesgoso, y las reglas lo convierten en fraude evitado.</h2>
       <div class="kpis">
         <div class="card"><div class="num">10,6 de 12<span>suspensiones en el 5 % de mayor score · azar: 0,6</span></div></div>
-        <div class="card"><div class="num">12,3 %<span>del $ de fraude evitado al rechazar</span></div></div>
-        <div class="card"><div class="num">1,78 %<span>del TPV bueno rechazado</span></div></div>
+        <div class="card"><div class="num">$0,91 M<span>de fraude evitado al rechazar · 12,3 %</span></div></div>
+        <div class="card"><div class="num">$53,2 M<span>de TPV bueno rechazado · 1,78 %</span></div></div>
         <div class="card"><div class="num">≈ 72 %<span>del $ de fraude evitado o retenido</span></div></div>
       </div>
       <div class="row eq" style="margin-top:0.9rem">
@@ -508,7 +506,6 @@
 
     <section class="slide tight" data-sec="Datos">
       <p class="kicker">Los datos y el target</p>
-      <h2>Una fila por merchant: el primer día suspendido contra un día activo de los demás.</h2>
       <div class="pipe sol">
         <div class="pipe-step"><div class="who">Entrada</div><div class="what">featureset diario</div><div class="why">una fila por merchant y día · abril a diciembre</div></div>
         <div class="flow-arr">→</div>
@@ -529,23 +526,19 @@
 
     <section class="slide" data-sec="Las suspensiones">
       <p class="kicker">De dónde sale el target · las 19 suspensiones con inicio observado</p>
-      <h2>Día por día: 12 muestran rechazos antes de la suspensión y 6 no muestran nada.</h2>
-      <div class="row" style="grid-template-columns:1.5fr 0.8fr;align-items:start">
-        <div class="chart-block" style="padding:0.5rem">
-          <img src="../docs/suspensiones.png" alt="Transacciones diarias de los 19 merchants con inicio de suspensión" style="width:100%;height:auto;max-height:68vh;object-fit:contain;border-radius:8px;background:#fff" />
-          <p class="legend" style="margin-top:0.4rem">Intentos y aprobadas por día, respecto del inicio · gris = suspendido, naranja claro = estado nulo. Cada barra resume la actividad del día anterior.</p>
-        </div>
-        <div style="display:flex;flex-direction:column;gap:0.7rem">
-          <div class="card"><p class="kicker" style="margin-bottom:0.3rem">12 · positivos</p><p>Los rechazos crecen hacia el inicio y llegan al máximo justo antes (M46B66AE, MA52FE20, M2971A5D). Son los casos que el modelo puede aprender.</p></div>
-          <div class="card"><p class="kicker" style="margin-bottom:0.3rem">6 · sin actividad sospechosa</p><p>Operan normal o casi no operan hasta la suspensión (por ejemplo M315DBFD, M3182C56, MEA1EE5C). Probable suspensión por documentación o cumplimiento: no hay nada que ver en la actividad, por eso quedan fuera.</p></div>
-          <div class="card"><p class="kicker" style="margin-bottom:0.3rem">1 · historia incompleta</p><p>M002D3A13 empieza el primer día de datos: no se sabe cómo llegó.</p></div>
-        </div>
+      <div class="chart-block" style="flex:0 0 auto;padding:0.4rem 0.5rem 0.35rem">
+        <img src="../docs/suspensiones.png" alt="Transacciones diarias de los 19 merchants con inicio de suspensión" onload="window.dispatchEvent(new Event('resize'))" style="width:100%;height:22rem;object-fit:contain;display:block;border-radius:8px;background:#fff" />
+        <p class="legend" style="margin:0.35rem 0 0">Intentos en naranja, aprobadas en azul. Gris = suspendido, verde claro = estado nulo. Cada barra resume la actividad del día anterior.</p>
+      </div>
+      <div class="row three" style="margin-top:0.6rem;gap:0.6rem">
+        <div class="card" style="padding:0.7rem 0.85rem"><p class="kicker" style="margin-bottom:0.25rem">12 · positivos</p><p>Los rechazos crecen hacia el inicio y llegan al máximo justo antes (M46B66AE, MA52FE20, M2971A5D). Son los casos que el modelo puede aprender.</p></div>
+        <div class="card" style="padding:0.7rem 0.85rem"><p class="kicker" style="margin-bottom:0.25rem">6 · sin actividad sospechosa</p><p>Operan normal o casi no operan hasta la suspensión (M315DBFD, M3182C56, MEA1EE5C). No hay nada que ver en la actividad, por eso quedan fuera.</p></div>
+        <div class="card" style="padding:0.7rem 0.85rem"><p class="kicker" style="margin-bottom:0.25rem">1 · historia incompleta</p><p>M002D3A13 empieza el primer día de datos: no se sabe cómo llegó.</p></div>
       </div>
     </section>
 
     <section class="slide" data-sec="Decisiones del target">
       <p class="kicker">Decisiones del target · en qué se basan</p>
-      <h2>Dos decisiones, cada una con su evidencia.</h2>
       <div class="cols2">
         <div class="dcard">
           <p class="kicker">1 · ¿Qué fila es el positivo?</p>
@@ -566,7 +559,6 @@
 
     <section class="slide" data-sec="Qué se ve antes">
       <p class="kicker">Qué se ve antes de una suspensión · las variables del modelo</p>
-      <h2>Los 12 se parecen entre sí y no se parecen a los demás.</h2>
       <div class="cols2">
         <div class="dcard">
           <p class="kicker">Variable 1 · aprobación reciente</p>
@@ -609,13 +601,11 @@
 
     <section class="slide tight" data-sec="Modelo">
       <p class="kicker">El modelo · en qué se basa la elección</p>
-      <h2>Una regresión logística de cuatro variables captura más que la regla y que el modelo con más variables.</h2>
-      <div class="row" style="grid-template-columns:1.25fr 0.95fr">
+      <div class="row" style="grid-template-columns:0.85fr 1.25fr">
         <div class="chart-block">
           <h3>Suspensiones capturadas en el 5 % de mayor score (de 12)</h3>
           <div class="hbars" style="gap:0.85rem;margin:0.5rem 0">
             <div class="hbar"><span>azar</span><div class="track"><div class="fill" style="width:5.7%;background:var(--muted)"></div></div><span class="n">0,6</span></div>
-            <div class="hbar"><span>regla</span><div class="track"><div class="fill" style="width:75.5%;background:var(--navy)"></div></div><span class="n">8,0</span></div>
             <div class="hbar"><span>logística A</span><div class="track"><div class="fill" style="width:78.3%;background:var(--navy)"></div></div><span class="n">8,3</span></div>
             <div class="hbar"><span>logística B</span><div class="track"><div class="fill" style="width:100%"></div></div><span class="n">10,6</span></div>
             <div class="hbar"><span>logística C</span><div class="track"><div class="fill" style="width:93.4%;background:var(--navy)"></div></div><span class="n">9,9</span></div>
@@ -623,13 +613,12 @@
           <p class="legend">Cada merchant se predice con un modelo que no lo vio · 5 folds × 10 semillas · empates repartidos al azar</p>
         </div>
         <table>
-          <thead><tr><th>Modelo</th><th class="r">Variables</th><th class="r">PR-AUC</th></tr></thead>
+          <thead><tr><th>Modelo</th><th>Variables</th><th class="r">N</th><th class="r">PR-AUC</th></tr></thead>
           <tbody>
-            <tr><td>Regla</td><td class="r">sin entrenar</td><td class="r">0,0083</td></tr>
-            <tr><td>A</td><td class="r">1</td><td class="r">0,0060</td></tr>
-            <tr><td><strong>B</strong></td><td class="r"><strong>4</strong></td><td class="r"><strong>0,0216</strong></td></tr>
-            <tr><td>C</td><td class="r">6</td><td class="r">0,0234</td></tr>
-            <tr><td>Prevalencia</td><td class="r"></td><td class="r">0,0004</td></tr>
+            <tr><td>A</td><td>aprobación reciente</td><td class="r">1</td><td class="r">0,0060</td></tr>
+            <tr><td><strong>B</strong></td><td>las de A · aprobación histórica · sin actividad a 7 días · peor día de rechazos</td><td class="r"><strong>4</strong></td><td class="r"><strong>0,0216</strong></td></tr>
+            <tr><td>C</td><td>las de B · ticket a 30 días · intentos a 7 días</td><td class="r">6</td><td class="r">0,0234</td></tr>
+            <tr><td>Prevalencia</td><td></td><td class="r"></td><td class="r">0,0004</td></tr>
           </tbody>
         </table>
       </div>
@@ -639,35 +628,29 @@
       </div>
     </section>
 
-    <section class="slide tight" data-sec="Score y join">
-      <p class="kicker">Score y join · en qué se basa el uso del score</p>
-      <h2>Ordena a los merchants: el 5 % más riesgoso concentra el 36 % del fraude con el 14 % de las transacciones.</h2>
-      <div class="row" style="grid-template-columns:1.35fr 0.65fr">
-        <div class="chart-block">
-          <h3>De cada 100 transacciones, cuántas son de cada tramo y cuánto del fraude traen</h3>
-          <svg class="plot" data-chart='{"type":"gbars","yMax":60,"ticks":[0,20,40,60],"unit":" %","groups":["0–50 %","50–90 %","90–95 %","95–99 %","99–100 %"],"series":[{"name":"transacciones","color":"#8fb7d6","y":[6.1,55.5,24.4,11.7,2.4]},{"name":"fraude","color":"#e07a3d","y":[13.4,37.5,13.3,29.5,6.3]}]}'></svg>
-          <p class="legend inl"><i style="background:#8fb7d6"></i>% de las transacciones <i style="background:#e07a3d"></i>% del fraude · tramos del percentil de riesgo del merchant</p>
-          <p class="muted" style="font-size:0.85rem;margin:0.3rem 0 0">Donde la barra naranja supera a la azul, el tramo trae más fraude que su peso: 95–99 % (29,5 contra 11,7) y 99–100 % (6,3 contra 2,4).</p>
-        </div>
-        <div style="display:flex;flex-direction:column;gap:0.7rem">
-          <div class="card"><div class="num">100 %<span>de 7.079.949 transacciones con score · 40.265 merchants</span></div></div>
-          <div class="card"><div class="num">931 de 2.600<span>fraudes en el 5 % más riesgoso (2.014 merchants)</span></div></div>
-        </div>
+    <section class="slide" data-sec="Score">
+      <p class="kicker">Score · en qué se basa el uso del score</p>
+      <div class="chart-block" style="flex:1 1 auto">
+        <h3>De cada 100 transacciones, cuántas son de cada tramo y cuánto del fraude traen</h3>
+        <svg class="plot" style="max-height:none;min-height:17rem" data-chart='{"type":"gbars","w":980,"h":320,"bar":70,"barUnit":true,"yMax":60,"ticks":[0,20,40,60],"unit":" %","groups":["0–50 %","50–90 %","90–95 %","95–99 %","99–100 %"],"series":[{"name":"transacciones","color":"#8fb7d6","y":[6.1,55.5,24.4,11.7,2.4]},{"name":"fraude","color":"#e07a3d","y":[13.4,37.5,13.3,29.5,6.3]}]}'></svg>
+        <p class="legend inl"><i style="background:#8fb7d6"></i>% de las transacciones <i style="background:#e07a3d"></i>% del fraude · tramos del percentil de riesgo del merchant</p>
+        <p class="muted" style="font-size:0.85rem;margin:0.3rem 0 0">Donde la barra naranja supera a la azul, el tramo trae más fraude que su peso: 95–99 % (29,5 contra 11,7) y 99–100 % (6,3 contra 2,4).</p>
       </div>
-      <div class="row eq" style="margin-top:0.9rem">
-        <div class="card"><p class="kicker" style="margin-bottom:0.3rem">Qué dice y qué no</p><p>Ordena bien por merchant (AUC 0,76) y casi nada por transacción (0,57). El score se entrena con suspensión, no con fraude. El tramo 0–50 % tiene una tasa de fraude alta (0,08 %): son merchants chicos que el score no ve.</p></div>
+      <div class="row" style="grid-template-columns:0.7fr 1.35fr 1fr;margin-top:0.8rem">
+        <div class="card"><div class="num">931 de 2.600<span>fraudes en el 5 % más riesgoso · 2.014 merchants</span></div></div>
+        <div class="card"><p class="kicker" style="margin-bottom:0.3rem">Qué dice y qué no</p><p>Ordena merchants, no transacciones: el 5 % más riesgoso trae el 36 % del fraude, pero dentro de un merchant todas las transacciones comparten el score. Se entrena con suspensión, no con fraude. El tramo 0–50 % tiene una tasa de fraude alta (0,08 %): son merchants chicos que el score no ve.</p></div>
         <div class="card"><p class="kicker" style="margin-bottom:0.3rem">Por qué cortes por percentil</p><p>La probabilidad no está calibrada: con 0,036 % de prevalencia y clases pesadas, 0,5 no significa nada. El percentil de riesgo es estable y se puede explicar a negocio.</p></div>
       </div>
     </section>
 
     <section class="slide" data-sec="Pre-autorización">
       <p class="kicker">Reglas de pre-autorización · en qué se basan los cortes</p>
-      <h2>Se rechaza solo donde el fraude evitado supera lo que se pierde en margen.</h2>
+      <h2>Tradeoff entre el fraude que se evita y el margen que se pierde.</h2>
       <div class="row" style="grid-template-columns:1.5fr 1fr">
         <div class="chart-block">
-          <h3>Equilibrio por volumen del merchant y corte de riesgo · conviene si supera el margen (1 %)</h3>
-          <svg class="plot" data-chart='{"type":"gbars","yMax":2.5,"ticks":[0,1,2],"unit":" %","mark":1,"markLabel":"margen 1 %","groups":["baja","media","alta"],"series":[{"name":"≥ 90 %","color":"#8fb7d6","y":[1.56,0.68,0.24]},{"name":"≥ 95 %","color":"#c5d4a8","y":[1.75,0.64,0.42]},{"name":"≥ 99 %","color":"#e07a3d","y":[0.91,2.34,0.09]}]}'></svg>
-          <p class="legend inl"><i style="background:#8fb7d6"></i>riesgo ≥ 90 % <i style="background:#c5d4a8"></i>≥ 95 % <i style="background:#e07a3d"></i>≥ 99 % · volumen: baja 1–9, media 10–99, alta ≥ 100 intentos en 30 días</p>
+          <h3>Equilibrio por volumen y puesto del score · conviene si la barra supera el margen (1 %)</h3>
+          <svg class="plot" data-chart='{"type":"gbars","yMax":3,"ticks":[0,1,2,3],"unit":" %","mark":1,"markLabel":"margen 1 %","markColor":"#f4efe6","groups":["≥ 0,90","≥ 0,95","≥ 0,99"],"series":[{"name":"volumen baja","color":"#8fb7d6","y":[1.56,1.75,0.91]},{"name":"volumen media","color":"#e07a3d","y":[0.68,0.64,2.34]},{"name":"volumen alta","color":"#c5d4a8","y":[0.24,0.42,0.09]}]}'></svg>
+          <p class="legend inl"><i style="background:#8fb7d6"></i>volumen bajo, 1–9 <i style="background:#e07a3d"></i>volumen medio, 10–99 <i style="background:#c5d4a8"></i>volumen alto, 100 o más · el eje es el puesto del score</p>
         </div>
         <div style="display:flex;flex-direction:column;gap:0.7rem">
           <div class="card">
@@ -677,19 +660,15 @@
             <p><strong>Volumen alto</strong>: nunca rechazar. A 90 % se pierde el 24,9 % del TPV bueno.</p>
           </div>
           <div class="card">
-            <p class="kicker" style="margin-bottom:0.3rem">Se sostiene en las dos mitades</p>
-            <table>
-              <tr><td>Mitad A</td><td class="r">1,35 %</td></tr>
-              <tr><td>Mitad B</td><td class="r">2,20 %</td></tr>
-              <tr><td>Sin el merchant de 256 fraudes</td><td class="r">1,71 %</td></tr>
-            </table>
+            <p class="kicker" style="margin-bottom:0.3rem">El balance es positivo</p>
+            <p><strong>$0,91 M</strong> de fraude − <strong>$0,53 M</strong> de margen = <strong>$0,38 M</strong>.</p>
           </div>
         </div>
       </div>
       <div class="kpis" style="margin-top:0.9rem">
         <div class="card"><div class="num">1.477<span>merchants rechazados · 19.193 transacciones</span></div></div>
-        <div class="card"><div class="num">12,3 %<span>del $ de fraude evitado</span></div></div>
-        <div class="card"><div class="num">1,78 %<span>del TPV bueno rechazado</span></div></div>
+        <div class="card"><div class="num">$0,91 M<span>de fraude evitado · 12,3 % del fraude</span></div></div>
+        <div class="card"><div class="num">$53,2 M<span>de TPV bueno rechazado · 1,78 %</span></div></div>
         <div class="card"><div class="num">93,17 %<span>aprobación final</span></div></div>
       </div>
     </section>
@@ -752,32 +731,7 @@
       </div>
     </section>
 
-    <section class="slide tight" data-sec="Límites">
-      <p class="kicker">Qué no hay que leer de más</p>
-      <h2>Límites y supuestos.</h2>
-      <div class="cols2">
-        <div class="dcard">
-          <h3>Del modelo</h3>
-          <ul>
-            <li><strong>12 positivos:</strong> un caso mueve 8 puntos de recall. Toda métrica es ruidosa.</li>
-            <li><strong>Sin período independiente:</strong> la regla, las variables y los cortes se eligieron mirando los mismos datos.</li>
-            <li><strong>Recall sobre suspensiones visibles:</strong> la empresa evalúa todas las de octubre a diciembre, incluidas las que no dejan rastro en la actividad.</li>
-            <li><strong>Suspensión no es fraude:</strong> el score ordena merchants, no transacciones.</li>
-          </ul>
-        </div>
-        <div class="dcard">
-          <h3>De las reglas</h3>
-          <ul>
-            <li><strong>Margen de Clip de 1 %</strong> y <strong>retención de 7 días</strong>: supuestos, no están en los datos.</li>
-            <li><strong>Cortes elegidos sobre las mismas transacciones</strong> con las que se miden: la mejora real será algo menor.</li>
-            <li><strong>Fraude concentrado:</strong> en CNP, 138 merchants y los 10 primeros suman el 58 % del $. Sacar uno cambia los números.</li>
-            <li><strong>≈ 523 merchants</strong> se puntúan con una fila anterior al 1 de octubre.</li>
-          </ul>
-        </div>
-      </div>
-    </section>
-
-    <section class="slide tight" data-sec="IA">
+        <section class="slide tight" data-sec="IA">
       <p class="kicker">Transparencia</p>
       <h2>Cómo se usó la IA.</h2>
       <div class="cols2">
@@ -863,7 +817,9 @@
       const ns = "http://www.w3.org/2000/svg";
       document.querySelectorAll("svg.plot[data-chart]").forEach((svg) => {
         const spec = JSON.parse(svg.getAttribute("data-chart"));
-        const w = 440, h = 250, L = 42, R = 14, T = 16, B = 32;
+        const wide = spec.w != null;
+        const w = spec.w || 440, h = spec.h || 250, L = wide ? 52 : 42, R = 16, T = wide ? 28 : 16, B = wide ? 42 : 32;
+        const fs = wide ? 14 : 11, vfs = wide ? 15 : 9.5;
         const iw = w - L - R, ih = h - T - B;
         const unit = spec.unit == null ? "%" : spec.unit;
         svg.setAttribute("viewBox", `0 0 ${w} ${h}`);
@@ -875,7 +831,7 @@
           svg.appendChild(n);
           return n;
         };
-        const txt = (x, y, t, extra) => el("text", Object.assign({ x, y, fill: "#a79e91", "font-size": 11, "font-family": "Outfit, sans-serif" }, extra), t);
+        const txt = (x, y, t, extra) => el("text", Object.assign({ x, y, fill: "#a79e91", "font-size": fs, "font-family": "Outfit, sans-serif" }, extra), t);
         const yMax = spec.yMax;
         const yAt = (v) => T + ih - (v / yMax) * ih;
         (spec.ticks || [0, yMax / 2, yMax]).forEach((g) => {
@@ -884,20 +840,22 @@
         });
         if (spec.type === "gbars") {
           const ng = spec.groups.length, ns_ = spec.series.length;
-          const gw = iw / ng, bw = Math.min(30, (gw * 0.7) / ns_);
+          const gw = iw / ng, bw = Math.min(spec.bar || 30, (gw * 0.72) / ns_);
           spec.groups.forEach((g, gi) => {
             const cx = L + gw * (gi + 0.5);
-            txt(cx, h - 8, g, { "text-anchor": "middle" });
+            txt(cx, h - (wide ? 16 : 8), g, { "text-anchor": "middle" });
             spec.series.forEach((s, si) => {
               const x = cx - (ns_ * bw) / 2 + si * bw;
               const v = s.y[gi], y = yAt(v);
-              el("rect", { x: x + 1, y, width: bw - 2, height: yAt(0) - y, rx: 2, fill: s.color });
-              txt(x + bw / 2, y - 4, String(v).replace(".", ","), { "text-anchor": "middle", fill: "#f4efe6", "font-size": 9.5 });
+              el("rect", { x: x + 1, y, width: Math.max(bw - (wide ? 4 : 2), 1), height: yAt(0) - y, rx: wide ? 3 : 2, fill: s.color });
+              const barText = String(v).replace(".", ",") + (spec.barUnit ? (spec.unit || "") : "");
+              txt(x + bw / 2, y - (wide ? 7 : 4), barText, { "text-anchor": "middle", fill: "#f4efe6", "font-size": vfs });
             });
           });
           if (spec.mark != null) {
-            el("line", { x1: L, x2: L + iw, y1: yAt(spec.mark), y2: yAt(spec.mark), stroke: "#e07a3d", "stroke-width": 1.6, "stroke-dasharray": "5 4" });
-            txt(L + iw, yAt(spec.mark) - 5, spec.markLabel || "", { "text-anchor": "end", fill: "#e07a3d" });
+            const markColor = spec.markColor || "#e07a3d";
+            el("line", { x1: L, x2: L + iw, y1: yAt(spec.mark), y2: yAt(spec.mark), stroke: markColor, "stroke-width": 1.6, "stroke-dasharray": "5 4" });
+            txt(L + iw, yAt(spec.mark) - 5, spec.markLabel || "", { "text-anchor": "end", fill: markColor });
           }
           return;
         }

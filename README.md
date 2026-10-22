@@ -27,7 +27,7 @@ Con los supuestos de margen de Clip de 1% y retención de 7 días, el rechazo ev
 
 - Con 12 positivos, cualquier métrica es ruidosa; un caso mueve 8 puntos de recall.
 - La regla, las variables y los cortes se eligieron mirando los mismos datos. No hay un período independiente adicional.
-- El score se entrena con suspensión, no con fraude: ordena bien el 5% más riesgoso y casi nada por transacción (AUC 0,57).
+- El score se entrena con suspensión, no con fraude: ordena bien el 5% más riesgoso y casi nada dentro del resto (el 5% más riesgoso concentra el 36% del fraude).
 - El margen de Clip y la retención de 7 días son supuestos que no están en los datos.
 
 ## Cómo reproducir
